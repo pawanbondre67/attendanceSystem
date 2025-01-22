@@ -6,6 +6,7 @@ export const lightColors = {
   text: '#000',
   cardBackground: '#fff',
   subText: '#aaa',
+  icon: '#000',
 };
 
 export const darkColors = {
@@ -16,4 +17,5 @@ export const darkColors = {
   text: '#000',
   cardBackground: '#2a2f3e',
   subText: '#aaa',
+  icon: '#000',
 };

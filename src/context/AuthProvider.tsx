@@ -50,9 +50,11 @@ export const AuthProvider: React.FC<{children: ReactNode}> = ({children}) => {
     loadUser();
   }, []);
 
-  const login = ({id, name, email}: any) => {
-    setUser({id: id, name: name, email: email});
+  const login = ({id, name, email ,password}: any) => {
+    setUser({id: id, name: name, email: email , password: password});
+
     setIsAuthenticated(true);
+
   };
 
   const logout = () => {

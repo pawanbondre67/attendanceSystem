@@ -7,6 +7,8 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
@@ -14,16 +16,28 @@ import {RootStackParamList} from '../../types/types';
 import {useTheme} from '../../theme/ThemeProvider';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+// import {useAuth} from '../../context/AuthProvider';
+import useLogin from './useLogin';
 
-const RegisterScreen = () => {
+const LoginScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // const [password, setPassword] = useState('1234567');
   const [width] = useState(new Animated.Value(50)); // Initial width
   const [opacity] = useState(new Animated.Value(1)); // Initial opacity
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+
+  const {
+    customerData: {CustomerCode, UserName, Password},
+    errors,
+    updateCustomerData,
+    handleLogin,
+    loginResult,
+  } = useLogin();
+
+  console.log('Login Result:', loginResult);
   const handlePressIn = () => {
+console.log(CustomerCode, UserName, Password);
     Animated.parallel([
       Animated.timing(width, {
         toValue: 300, // Expanded width
@@ -35,11 +49,7 @@ const RegisterScreen = () => {
         duration: 10,
         useNativeDriver: false,
       }),
-    ]).start(() => {
-      setTimeout(() => {
-        navigation.navigate('camera');
-      }, 300);
-    });
+    ]).start();
   };
 
   const handlePressOut = () => {
@@ -57,9 +67,13 @@ const RegisterScreen = () => {
     ]).start();
   };
 
-  const {Colors, dark} = useTheme();
-  console.log('Current theme', dark);
+  const {Colors} = useTheme();
+  console.log('Current theme:');
+  // console.log('User logged in:', user);
   return (
+    <KeyboardAvoidingView
+    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    style={{flex: 1}}>
     <SafeAreaView style={styles.container}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View>
@@ -70,14 +84,31 @@ const RegisterScreen = () => {
 
           <View style={styles.overlay}>
             <View style={styles.inputContainer}>
+              <Text style={styles.label}>Customer Code</Text>
+              <TextInput
+                style={[styles.input, {color: Colors.text}]}
+                placeholder="Enter your customerCode"
+                placeholderTextColor="#808080"
+                value={CustomerCode}
+                autoCapitalize="characters"
+                onChangeText={text => {
+                  updateCustomerData({CustomerCode: text});
+                }}
+              />
+              {errors.CustomerCode ? <Text style={styles.errorText} >{errors.CustomerCode}</Text> : null}
+            </View>
+            <View style={styles.inputContainer}>
               <Text style={styles.label}>Username</Text>
               <TextInput
                 style={[styles.input, {color: Colors.text}]}
                 placeholder="Enter your username"
                 placeholderTextColor="#808080"
-                value={username}
-                onChangeText={setUsername}
+                value={UserName}
+                onChangeText={text => {
+                  updateCustomerData({UserName: text});
+                }}
               />
+              {errors.UserName ? <Text style={styles.errorText} >{errors.UserName}</Text> : null}
             </View>
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Password</Text>
@@ -86,11 +117,14 @@ const RegisterScreen = () => {
                   style={[styles.input, {color: Colors.text}]}
                   placeholder="Enter your password"
                   placeholderTextColor="#808080"
-                  value={password}
+                  value={Password}
                   textContentType="password"
-                  onChangeText={setPassword}
+                  onChangeText={text => {
+                    updateCustomerData({Password: text});
+                  }}
                   secureTextEntry={!passwordVisible}
                 />
+
                 <Pressable
                   onPress={() => setPasswordVisible(!passwordVisible)}
                   style={styles.eyeIconContainer}>
@@ -101,12 +135,14 @@ const RegisterScreen = () => {
                   />
                 </Pressable>
               </View>
+              {errors.Password ? <Text style={styles.errorText} >{errors.Password}</Text> : null}
             </View>
           </View>
         </View>
       </TouchableWithoutFeedback>
       <View style={styles.buttonContainer}>
         <Pressable
+        onPress={handleLogin}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
           style={styles.button}>
@@ -124,6 +160,7 @@ const RegisterScreen = () => {
         </Pressable>
       </View>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -135,10 +172,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: Platform.select({
+      ios: '#F5F5F5', // Light background for iOS
+      android: '#F5F5F5', // Slightly darker background for Android
+    }),
   },
-  welcomeContainer:{
-    alignItems:'center',
-    marginBottom:20
+  welcomeContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   overlay: {
     padding: 20,
@@ -154,6 +195,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     marginTop: 20,
+    shadowColor: Platform.select({
+      ios: '#000', // Subtle shadow for iOS
+      android: 'transparent', // Use elevation for Android
+    }),
   },
   inputContainer: {
     gap: 10,
@@ -166,7 +211,8 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: '100%',
-    marginVertical: 10,
+    marginTop: 5,
+    marginBottom: 1,
     borderWidth: 1,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
@@ -181,7 +227,11 @@ const styles = StyleSheet.create({
   eyeIconContainer: {
     position: 'absolute',
     right: 10,
-    top: 17, // Align the icon vertically within the input field
+    top: 12,
+  },
+  errorText:{
+    color: 'red',
+    fontSize: 12,
   },
   buttonContainer: {
     marginTop: 60,
@@ -219,4 +269,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterScreen;
+export default LoginScreen;

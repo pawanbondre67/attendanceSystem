@@ -2,15 +2,16 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from './screens/splash/SplashScreen';
 import HomeScreen from './screens/home/HomeScreen';
-import RegisterScreen from './screens/Auth/RegisterScreen';
+import LoginScreen from './screens/Auth/LoginScreen';
 import CameraAuth from './screens/cameraAuth/CameraAuth';
 import {RootStackParamList} from './types/types';
+import CheckInOut from './screens/CheckInOut';
 
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootStack = () => {
   return (
-    <Stack.Navigator initialRouteName="splash">
+    <Stack.Navigator initialRouteName="home">
       <Stack.Screen name="splash" component={SplashScreen} />
       <Stack.Screen
         name="home"
@@ -40,7 +41,14 @@ const RootStack = () => {
         options={{
           headerShown: false,
         }}
-        component={RegisterScreen}
+        component={LoginScreen}
+      />
+      <Stack.Screen
+        name="checkinout"
+        options={{
+        title: 'Attendance',
+        }}
+        component={CheckInOut}
       />
     </Stack.Navigator>
   );

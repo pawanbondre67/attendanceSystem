@@ -1,17 +1,27 @@
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {RootStackParamList} from '../../types/types';
+import {SafeAreaView} from 'react-native-safe-area-context';
+// import { useTheme } from '../../theme/ThemeProvider';
+// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = () => {
-  const [status, setStatus] = useState('PUNCH IN');
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  // const {Colors, dark} = useTheme();
+
+  const [status, setStatus] = useState('Check IN');
   return (
-    <View style={styles.maincontainer}>
+    <SafeAreaView style={styles.maincontainer}>
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <Image
             style={styles.userImage}
-            source={{uri: 'https://avatar.iran.liara.run/public/boy?username=pawan'}} // Placeholder image
+            source={{
+              uri: 'https://avatar.iran.liara.run/public/boy?username=pawan',
+            }} // Placeholder image
           />
           <View>
             <Text style={styles.userName}>HEY JHONE DOE</Text>
@@ -20,53 +30,63 @@ const HomeScreen = () => {
         </View>
         <Icon name="refresh" size={24} color="#000" />
       </View>
-      {/* Time Display */}
-      <View style={styles.timeSection}>
-        <Text style={styles.time}>09:15 AM</Text>
-        <Text style={styles.date}>Feb 01, 2024 - Thursday</Text>
-      </View>
 
-
-      {/* Punch In Button */}
       <View style={styles.container}>
-        {status === 'PUNCH IN' ? (
-          <View style={styles.outerCircle}>
-            <TouchableOpacity style={styles.button}>
-              <View style={styles.innerCircle}>
-                <Icon name="touch-app" size={40} color="#ff0000" />
-                <Text style={styles.label}>PUNCH IN</Text>
-              </View>
-            </TouchableOpacity>
+        {/* Time Display */}
+        <View style={styles.timeSection}>
+          <Text style={styles.time}>09:15 AM</Text>
+          <Text style={styles.date}>Feb 01, 2024 - Thursday</Text>
+        </View>
+
+        {/* Punch In Button */}
+        <View style={styles.container}>
+          {status === 'Check IN' ? (
+            <View style={styles.outerCircle}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => navigation.navigate('checkinout', {type: 'in'})}>
+                <View style={styles.innerCircle}>
+                  <Icon name="touch-app" size={40} color="#ff0000" />
+                  <Text style={styles.label}>Check IN</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.outerCircle}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() =>
+                  navigation.navigate('checkinout', {type: 'out'})
+                }>
+                <View style={styles.innerCircle}>
+                  <Icon name="touch-app" size={40} color="green" />
+                  <Text style={styles.label}>Check OUT</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+        {/* Punch Details Section */}
+
+        <View style={styles.punchDetails}>
+          <View style={styles.punchItem}>
+            <Icon name="access-time" size={24} color="#ff0000" />
+            <Text style={styles.punchText}>09:08 AM</Text>
+            <Text style={styles.punchLabel}>Punch In</Text>
           </View>
-        ) : (
-          <View style={styles.outerCircle}>
-            <TouchableOpacity style={styles.button}>
-              <View style={styles.innerCircle}>
-                <Icon name="touch-app" size={40} color="#ff0000" />
-                <Text style={styles.label}>PUNCH OUT</Text>
-              </View>
-            </TouchableOpacity>
+          <View style={styles.punchItem}>
+            <Icon name="access-time" size={24} color="#ff0000" />
+            <Text style={styles.punchText}>06:05 PM</Text>
+            <Text style={styles.punchLabel}>Punch Out</Text>
           </View>
-        )}
-      </View>
-      {/* Punch Details Section */}
-      <View style={styles.punchDetails}>
-        <View style={styles.punchItem}>
-          <Icon name="access-time" size={24} color="#ff0000" />
-          <Text style={styles.punchText}>09:08 AM</Text>
-          <Text style={styles.punchLabel}>Punch In</Text>
-        </View>
-        <View style={styles.punchItem}>
-          <Icon name="access-time" size={24} color="#ff0000" />
-          <Text style={styles.punchText}>06:05 PM</Text>
-          <Text style={styles.punchLabel}>Punch Out</Text>
-        </View>
-        <View style={styles.punchItem}>
-          <Icon name="timer" size={24} color="#ff0000" />
-          <Text style={styles.punchText}>08:13</Text>
-          <Text style={styles.punchLabel}>Total Hours</Text>
+          <View style={styles.punchItem}>
+            <Icon name="timer" size={24} color="#ff0000" />
+            <Text style={styles.punchText}>08:13</Text>
+            <Text style={styles.punchLabel}>Total Hours</Text>
+          </View>
         </View>
       </View>
+
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
@@ -82,28 +102,30 @@ const HomeScreen = () => {
           <Text style={styles.navText}>Menu</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    // backgroundColor: 'red',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f7f7f7',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     // padding: 20,
+    // marginTop: 40,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: '#fff',
+    // backgroundColor: 'red',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
@@ -130,7 +152,7 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: 48,
-    fontWeight: 'bold',
+    fontWeight: 'thin',
   },
   date: {
     fontSize: 16,
@@ -181,6 +203,7 @@ const styles = StyleSheet.create({
   },
   punchDetails: {
     flexDirection: 'row',
+    width: '100%',
     justifyContent: 'space-around',
     paddingVertical: 20,
     backgroundColor: '#fff',

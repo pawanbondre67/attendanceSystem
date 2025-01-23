@@ -2,7 +2,7 @@ import {check} from 'react-native-permissions';
 import {useCallback, useEffect, useState} from 'react';
 import {formatDate} from '../../helper/index';
 import useLocation from '../../helper/location';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
 import NetInfo from '@react-native-community/netinfo';
@@ -10,6 +10,7 @@ import NetInfo from '@react-native-community/netinfo';
 import {
   useCheckOutMutation,
   useMarkAttendanceMutation,
+  useLatestStatusQuery,
 } from '../../redux/services/attendance/attendanceApiSlice';
 
 // import {CheckInOutData} from '../../redux/slices/Attendance/index';
@@ -29,18 +30,29 @@ interface ErrorState {
   file: string;
   location: string;
 }
+interface RouteParams {
+  type: string;
+}
+type CheckInOutRouteProp = RouteProp<{params: RouteParams}, 'params'>;
 
 const useCheckInOut = () => {
   const dispatch = useAppDispatch();
   const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
 
-  const {CheckInOutData : attendanceData} = useAppSelector(state => state.attendance);
+  const {CheckInOutData: attendanceData } = useAppSelector(
+    state => state.attendance,
+  );
 
   console.log('CheckInOutData', attendanceData);
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
+  const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
+
+
+
   const [checkOut, checkOutResult] = useCheckOutMutation();
-  const route = useRoute();
-  const btnLabel = route.params?.type || 'Checkin';
+  const route = useRoute<CheckInOutRouteProp>();
+  const btnLabel = route.params?.type;
+  console.log('btnLabel', btnLabel);
   const navigation = useNavigation();
 
   const [checkInOutData, setCheckinOutData] = useState<CheckInOutData>({
@@ -55,6 +67,19 @@ const useCheckInOut = () => {
     file: '',
     location: '',
   });
+
+  useEffect(() => {
+    if (latestStatusData) {
+      console.log('latestStatusData', latestStatusData);
+      dispatch(
+        setAttendanceData({
+          ...attendanceData,
+          status: latestStatusData.data.status,
+        }),
+      );
+    }
+  } , [latestStatusData]);
+  console.log('only after mark attendace data is updated' ,attendanceData);
 
   useEffect(() => {
     if (!checkInOutData.latitude || !checkInOutData.longitude) {
@@ -73,7 +98,8 @@ const useCheckInOut = () => {
     checkInOutData.longitude,
   ]);
 
-  console.log(checkOutResult);
+  console.log('checkout result data', checkOutResult);
+  console.log('after marking attednase resp data', markAttendanceResult);
 
   const generateCheckinOutPayload = async () => {
     try {
@@ -89,11 +115,11 @@ const useCheckInOut = () => {
         status: status === 'checkin' ? 'in' : 'inout',
         mip: deviceIp,
         mid: deviceName,
-        selfie: checkInOutData?.image?.path
+        selfie: checkInOutData?.image
           ? {
               uri: isIos
-                ? checkInOutData?.image?.path
-                : `file://${checkInOutData?.image?.path}`,
+                ? checkInOutData?.image
+                : `file://${checkInOutData?.image}`,
               type: 'image/jpeg',
               name: selfieName,
             }
@@ -111,7 +137,7 @@ const useCheckInOut = () => {
       }
 
       return payload;
-    } catch (error) {
+    } catch (err) {
       console.error('Error generating payload:', error);
       throw error;
     }
@@ -125,12 +151,11 @@ const useCheckInOut = () => {
       dispatch(
         setAttendanceData({
           ...attendanceData,
-          inTime: new Date().toISOString(),
-          outTime: new Date().toISOString(),
-          // status: attendanceData?.status === 'in' ? 'in' : 'out',
+          // inTime: markAttendanceResult.data.data.inTime,
+          status: markAttendanceResult.data.data.status,
         }),
       );
-      navigation.goBack();
+      navigation.replace('home');
     }
 
     if (
@@ -143,17 +168,14 @@ const useCheckInOut = () => {
       );
     }
     if (checkOutResult?.isSuccess && checkOutResult?.data?.message) {
-      // dispatch(
-      //   setAttendanceData({
-      //     ...attendanceData,
-      //     checkInOutDateTime: new Date().toISOString(),
-      //     status: attendanceData?.status === 'in' ? 'inout' : 'in',
-      //     beginTime: attendanceData?.beginTime || '', // Ensuring beginTime is always a string
-      //     endTime: attendanceData?.endTime || '', // Ensuring endTime is always a string
-      //     shiftName: attendanceData?.shiftName || '', // Ensuring shiftName is always a string
-      //   }),
-      // );
-      navigation.goBack();
+      dispatch(
+        setAttendanceData({
+          ...attendanceData,
+          // outTime: markAttendanceResult.data.data.outTime,
+          status: markAttendanceResult.data.data.status,
+        }),
+      );
+      navigation.replace('home');
     }
     if (checkOutResult?.isError && checkOutResult?.error?.data?.message) {
       console.error('Error checking out:', checkOutResult.error.data.message);
@@ -167,7 +189,7 @@ const useCheckInOut = () => {
     }));
   };
 
-  console.log('markAttendanceResult', markAttendanceResult);
+  // console.log('markAttendanceResult', markAttendanceResult);
 
   const generateErrorState = (checkInOutData: CheckInOutData) => {
     const errors: Partial<ErrorState> = {};
@@ -212,15 +234,13 @@ const useCheckInOut = () => {
               // await saveAttendance(payload);
               console.log('attendance saved ', payload);
               // dispatch(setSnackMessage('Attendance saved offline'));
-            } catch (error) {
-              console.error('Error saving attendance:', error);
-              // Handle error while saving to SQLite
-              // dispatch(setSnackMessage('Error saving attendance offline'));
+            } catch (innerError) {
+              console.error('Error saving attendance:', innerError);
             }
           }
         });
-      } catch (error) {
-        console.error('Error submitting attendance:', error);
+      } catch (err) {
+        console.error('Error submitting attendance:', err);
       }
     }
   };

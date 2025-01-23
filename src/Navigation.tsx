@@ -8,10 +8,11 @@ import {RootStackParamList} from './types/types';
 import CheckInOut from './screens/CheckInOut';
 
 
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootStack = () => {
   return (
-    <Stack.Navigator initialRouteName="home">
+    <Stack.Navigator initialRouteName="splash">
       <Stack.Screen name="splash" component={SplashScreen} />
       <Stack.Screen
         name="home"

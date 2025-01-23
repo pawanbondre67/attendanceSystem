@@ -1,20 +1,23 @@
 import React from 'react';
-import {Text, StyleSheet, View, Pressable} from 'react-native';
+import {Text, StyleSheet, Pressable} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../types/types';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../types/types';
 
 interface AnimatedArrowButtonProps {
-    routeName: string;
-  }
-const AnimatedArrowButton: React.FC<AnimatedArrowButtonProps>  = ( {routeName}) => {
+  routeName: string;
+  submit: () => void; 
 
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+}
+const AnimatedArrowButton: React.FC<AnimatedArrowButtonProps> = ({
+  routeName,  submit,
+}) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const translateX = useSharedValue(0); // Shared value to control the arrow's translation
 
   const onPressIn = () => {
@@ -34,7 +37,10 @@ const AnimatedArrowButton: React.FC<AnimatedArrowButtonProps>  = ( {routeName}) 
   return (
     <Pressable
       style={styles.button}
-      onPress={() => navigation.replace(`${routeName}`)}
+      onPress={() => {
+        submit();
+        navigation.replace(`${routeName}`);
+      }}
       onPressIn={onPressIn}
       onPressOut={onPressOut}>
       <Text style={styles.buttonText}>Done</Text>

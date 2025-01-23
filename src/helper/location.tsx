@@ -9,7 +9,7 @@ const useLocation = () => {
   const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
   const [locationStatus, setLocationStatus] = useState('');
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  let watchID : number  = 0;
+  let watchID: number = 0;
   const navigation = useNavigation();
   useEffect(() => {
     // Function to request location permission
@@ -29,7 +29,7 @@ const useLocation = () => {
               buttonPositive: 'OK',
             },
           );
-  
+
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             // If permission is granted, check GPS status
             checkGPSStatus();
@@ -44,10 +44,10 @@ const useLocation = () => {
         }
       }
     };
-  
+
     // Call the function to request location permission
     requestLocationPermission();
-  
+
     // Cleanup function to clear the location watch when the component unmounts
     return () => {
       Geolocation.clearWatch(watchID);
@@ -64,7 +64,7 @@ const useLocation = () => {
         // const currentLongitude = position.coords.longitude;
         // const currentLatitude = position.coords.latitude;
         setCurrentLongitude(position.coords.longitude);
-        setCurrentLatitude( position.coords.latitude);
+        setCurrentLatitude(position.coords.latitude);
       },
       error => {
         setIsFetchingLocation(false);

@@ -60,7 +60,7 @@ const CaptureImage = ({
         const photo = await cameraRef.current.takePhoto();
         console.log('Photo captured:', photo);
         setCapturedPhoto(photo.path);
-        onPhotoCapture( 'file://' + photo.path); // Pass captured photo data to parent component
+        onPhotoCapture(photo.path); // Pass captured photo data to parent component
       } catch (err) {
         console.warn('Failed to take photo', err);
         // Handle error (e.g., show an error message)

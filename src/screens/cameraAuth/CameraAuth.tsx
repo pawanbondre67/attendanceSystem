@@ -4,17 +4,20 @@ import {Camera, useCameraDevice} from 'react-native-vision-camera';
 import LottieView from 'lottie-react-native';
 import {ProgressBar} from 'react-native-paper';
 import AnimatedArrowButton from '../../components/AnimatedArrowButton';
-import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { Alert } from 'react-native';
-import { Platform } from 'react-native';
+import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
+import {Alert} from 'react-native';
+import {Platform} from 'react-native';
+import useCameraAuth from './useCameraAuth';
 const CameraAuth = () => {
+  const {onsubmit, images, setImages} = useCameraAuth();
+
   const device = useCameraDevice('front');
   const camera = useRef(null);
-  const [photos, setPhotos] = useState({
-    left: null,
-    right: null,
-    straight: null,
-  });
+  // const [photos, setPhotos] = useState({
+  //   left: null,
+  //   right: null,
+  //   straight: null,
+  // });
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [verificationProgress, setVerificationProgress] = useState(0);
@@ -39,31 +42,39 @@ const CameraAuth = () => {
         }
 
         if (requestResult !== RESULTS.GRANTED) {
-          Alert.alert('Permission Denied', 'Camera permission is required to take photos.');
+          Alert.alert(
+            'Permission Denied',
+            'Camera permission is required to take photos.',
+          );
         }
       } else if (result !== RESULTS.GRANTED) {
-        Alert.alert('Permission Denied', 'Camera permission is required to take photos.');
+        Alert.alert(
+          'Permission Denied',
+          'Camera permission is required to take photos.',
+        );
       }
     };
 
     checkCameraPermission();
   }, []);
 
+  console.log('Photos no :', step, images);
+
   const capturePhoto = async () => {
     if (camera.current) {
       const photo = await camera.current.takePhoto();
       console.log('Capturing Photo No :', step, photo.path);
-      setPhotos(prevPhotos => ({
+      setImages(prevPhotos => ({
         ...prevPhotos,
         [steps[step]]: photo.path,
       }));
-      console.log('Photos no :',step, photos);
+     
       setProgress((step + 1) / 3); // Update the progress bar
       if (step < 2) {
         setStep(step + 1);
       } else {
         setStep(step + 1);
-        console.log('Captured Photos:', {...photos, [steps[step]]: photo.path});
+        console.log('Captured Photos:', {...images, [steps[step]]: photo.path});
         simulateVerification();
       }
     }
@@ -83,14 +94,14 @@ const CameraAuth = () => {
   };
 
   if (!device) {
-
     console.log('No Camera Found');
-     return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Face Verification</Text>
-      <Text style={styles.subheading}>No Camera Found</Text>
-    </View>
-  );}
+    return (
+      <View style={styles.container}>
+        <Text style={styles.heading}>Face Verification</Text>
+        <Text style={styles.subheading}>No Camera Found</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -144,7 +155,7 @@ const CameraAuth = () => {
       </View>
 
       {step === 3 && verificationProgress === 100 ? (
-        <AnimatedArrowButton routeName="home" />
+        <AnimatedArrowButton submit={onsubmit} routeName="home"  />
       ) : (
         <TouchableOpacity
           style={styles.captureButton}

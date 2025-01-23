@@ -1,8 +1,10 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {AttendanceState, CheckInOutData} from './types';
+import { CheckInOutData} from './types';
 
-const initialState: AttendanceState = {
-  CheckInOutData: null,
+const initialState: {CheckInOutData: CheckInOutData} = {
+  CheckInOutData: {
+    status: null,
+  },
 };
 
 export const attendanceSlice = createSlice({

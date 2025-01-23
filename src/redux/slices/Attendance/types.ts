@@ -1,8 +1,6 @@
 // types.ts
 export interface CheckInOutData {
-  inTime: string;
-  outTime: string;
-  status?: string;
+  status: string | null;
 }
 
 export interface AttendanceState {

@@ -3,14 +3,12 @@ import {LoginResponse, LoginApiArgs, FCMArgs} from './types';
 
 // Define a service using a base URL and expected endpoints
 export const loginApi = baseApi.injectEndpoints({
-
   endpoints: builder => ({
     login: builder.query<LoginResponse, LoginApiArgs>({
-
       query: payload => {
-        console.log('Payload:', payload );
+        console.log('Payload:', payload);
         return {
-          url: `login`,
+          url: 'login',
           method: 'POST',
           body: payload,
         };
@@ -18,7 +16,7 @@ export const loginApi = baseApi.injectEndpoints({
     }),
     addFCM: builder.mutation<any, FCMArgs>({
       query: payload => ({
-        url: `AddFcmToken`,
+        url: 'AddFcmToken',
         method: 'POST',
         body: payload,
       }),

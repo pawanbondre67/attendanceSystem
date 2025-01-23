@@ -1,17 +1,40 @@
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {RootStackParamList} from '../../types/types';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useAppSelector} from '../../redux/hook/hook';
+import moment from 'moment';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+const getCurrentTimeIn12HourFormat = (): string => {
+  return moment().format('hh:mm A');
+};
+
 const HomeScreen = () => {
+
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
+  const currenttime = getCurrentTimeIn12HourFormat();
 
-  const [status, setStatus] = useState('Check IN');
+  const {status} = useAppSelector(state => state.attendance.CheckInOutData);
+  console.log('status returing from globsl state', status);
+
+   // Function to delete employeeId from local storage
+   const deleteEmployeeId = async () => {
+    try {
+      await AsyncStorage.removeItem('employeeDetails');
+      console.log('employeeId deleted from local storage');
+      // Optionally, navigate to another screen or update state
+      navigation.replace('register');
+    } catch (error) {
+      console.error('Failed to delete employeeId from local storage', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.maincontainer}>
       {/* Header Section */}
@@ -28,26 +51,28 @@ const HomeScreen = () => {
             <Text style={styles.userId}>MZ001234</Text>
           </View>
         </View>
-        <Icon name="refresh" size={24} color="#000" />
+        <Icon name="refresh" onPress={deleteEmployeeId} size={24} color="#000" />
       </View>
 
       <View style={styles.container}>
         {/* Time Display */}
         <View style={styles.timeSection}>
-          <Text style={styles.time}>09:15 AM</Text>
+          <Text style={styles.time}>{currenttime}</Text>
           <Text style={styles.date}>Feb 01, 2024 - Thursday</Text>
         </View>
 
         {/* Punch In Button */}
         <View style={styles.container}>
-          {status === 'Check IN' ? (
+          {status === 'in' ? (
             <View style={styles.outerCircle}>
               <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate('checkinout', {type: 'in'})}>
+                onPress={() =>
+                  navigation.navigate('checkinout', {type: 'checkout'})
+                }>
                 <View style={styles.innerCircle}>
-                  <Icon name="touch-app" size={40} color="#ff0000" />
-                  <Text style={styles.label}>Check IN</Text>
+                  <Icon name="touch-app" size={40} color="green" />
+                  <Text style={styles.label}>Check Out</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -56,11 +81,11 @@ const HomeScreen = () => {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() =>
-                  navigation.navigate('checkinout', {type: 'out'})
+                  navigation.navigate('checkinout', {type: 'checkin'})
                 }>
                 <View style={styles.innerCircle}>
-                  <Icon name="touch-app" size={40} color="green" />
-                  <Text style={styles.label}>Check OUT</Text>
+                  <Icon name="touch-app" size={40} color="red" />
+                  <Text style={styles.label}>Check In</Text>
                 </View>
               </TouchableOpacity>
             </View>
@@ -71,12 +96,12 @@ const HomeScreen = () => {
         <View style={styles.punchDetails}>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>09:08 AM</Text>
+            <Text style={styles.punchText}>{}AM</Text>
             <Text style={styles.punchLabel}>Punch In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>06:05 PM</Text>
+            <Text style={styles.punchText}>{} PM</Text>
             <Text style={styles.punchLabel}>Punch Out</Text>
           </View>
           <View style={styles.punchItem}>

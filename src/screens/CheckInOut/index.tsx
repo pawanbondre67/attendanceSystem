@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -17,30 +17,16 @@ const CheckInOut = (props: Props) => {
   const {
     checkInOutData,
     onSubmit,
-    // errorState,
-    // btnLabel,
-    // isFetchingLocation,
-    // markAttendanceResult,
-    // proceedMarkAttendance,
+    errorState,
+    btnLabel,
+    isFetchingLocation,
+    markAttendanceResult,
+    proceedMarkAttendance,
     onPhotoCapture,
-    // currentLatitude,
+    currentLatitude,
     pickImage,
-    // currentLongitude,
+    currentLongitude,
   } = useCheckInOut();
-
-  // // Debugging logs
-  // console.log('checkInOutData:', checkInOutData);
-  // console.log('btnLabel:', btnLabel);
-  // console.log('currentLatitude:', currentLatitude);
-  // console.log('currentLongitude:', currentLongitude);
-
-  // const handleMarkAttendance = () => {
-  //   if (!checkInOutData.image) {
-  //     Alert.alert('Please capture a selfie to mark attendance.');
-  //     return;
-  //   }
-  //   Alert.alert('Attendance marked successfully!');
-  // };
 
   return checkInOutData.showCamera ? (
     <CaptureImage onPhotoCapture={onPhotoCapture} />
@@ -67,7 +53,7 @@ const CheckInOut = (props: Props) => {
         mode="contained"
         onPress={onSubmit}
         style={styles.button}>
-        CHECKIN
+        Mark Attendance
       </Button>
       </View>
     </View>

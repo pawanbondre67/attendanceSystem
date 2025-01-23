@@ -9,7 +9,7 @@ import {API_TOKEN, APP_DATA_ENCRYPTION_KEY} from '@env';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../types/types';
 import {useAppDispatch} from '../../redux/hook/hook';
-import {setEmployeeDetails} from '../../redux/slices/Employee/index';
+import { setEmployeeId} from '../../redux/slices/Employee/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Errors {
@@ -49,14 +49,15 @@ const useLogin = () => {
     setCustomerData(prevData => ({...prevData, ...newData}));
   };
 
-  const saveEmployeeIdToLocal = async (id: string) => {
-    console.log('employee id', id);
-    setEmployeeID(id);
-    await AsyncStorage.setItem('employeeId', id);
-    AsyncStorage.getItem('employeeId').then(res => {
-      console.log('user saved in local storage', res);
+  const saveEmployeeDetailsToLocal = async (employeeDetails : CustomerData ) => {
+    setEmployeeID(employeeDetails.UserName);
+    try {
+    const jsonValue = JSON.stringify(employeeDetails);
+    await AsyncStorage.setItem('employeeDetails', jsonValue);
+    console.log('Employee details saved to local storage');
+    } catch (error) {
+      console.error('Failed to save employee details to local storage', error);
     }
-    );
   };
 
   const handleLogin = async () => {
@@ -86,7 +87,8 @@ const useLogin = () => {
         }
         if (response?.data) {
           //   await saveLoginCredintials(customerData);
-          await saveEmployeeIdToLocal(response?.data?.employeeId.toString());
+          dispatch(setEmployeeId(response?.data?.employeeId.toString()));
+          await saveEmployeeDetailsToLocal(customerData);
 
           //   const details = await getUserDetails(
           //     response?.data?.employeeId.toString(),
@@ -96,7 +98,7 @@ const useLogin = () => {
           //   dispatch(setEmployeeDetails(details?.data));
           // dispatch(setPinMode(PinCodeT.Modes.Set));
         
-          navigation.navigate(response?.data?.isAppRegistermandatory ? 'camera' : 'home');
+          navigation.navigate(response?.data?.isAppRegistermandatory ? 'camera' : 'camera');
         }
       } catch (error: any) {
         if (error) {

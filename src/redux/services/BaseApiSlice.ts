@@ -14,14 +14,10 @@ export const baseApi = createApi({
   }),
 
   tagTypes: [
-    'Post',
-    'SL',
-    'PunchMissingList',
-    'Leave',
-    'event',
-    'news',
+
     'Notification',
     'checkin',
+    'checkout',
   ],
   endpoints: () => ({}),
 });

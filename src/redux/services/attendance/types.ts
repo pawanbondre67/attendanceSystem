@@ -1,26 +1,36 @@
-export interface CheckInPayload {
+export interface CheckOutPayload {
   mid: string;
   mip: string;
+  employeeMaster_Fid: string;
   outLat: number;
   outLong: number;
   outDate: string;
   outTime: string;
-  outImage: string;
+  outImage: {
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
+  };
   status: string;
-  employeeMaster_Fid: string;
   [key: string]: any; // Index signature allowing arbitrary string keys
 }
 
-export interface CheckOutPayload {
+export interface CheckInPayload {
   mid: string;
   mip: string;
+  employeeMaster_Fid: string;
   inLat: number;
   inLong: number;
   inDate: string;
   inTime: string;
-  outImage: string;
+  inImage: {
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
+  };
   status: string;
-  employeeMaster_Fid: string;
   [key: string]: any; // Index signature allowing arbitrary string keys
 }
 
@@ -48,10 +58,10 @@ export interface registerPayload {
     type: string;
   };
   InPhoneImage: {
-    uri?: string;
-    name?: string;
-    filename?: string;
-    type?: string;
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
   };
   [key: string]: any;
 }

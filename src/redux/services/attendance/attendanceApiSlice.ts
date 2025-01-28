@@ -7,11 +7,16 @@ export const attendanceApi = baseApi.injectEndpoints({
   endpoints: builder => ({
     markAttendance: builder.mutation<any, CheckInPayload>({
       query: payload => {
-        const {outImage, ...rest} = payload;
+        const {inImage, ...rest} = payload;
 
         // Creating a new FormData object
         const formData = new FormData();
-        formData.append('selfie', outImage);
+        formData.append('inImage', {
+          uri : inImage.uri,
+          name: inImage.name,
+          filename: inImage.filename,
+          type: inImage.type,
+        });
         // Append other payload data as needed
         Object.keys(rest).forEach(key => {
           formData.append(key, rest[key]);
@@ -36,7 +41,12 @@ export const attendanceApi = baseApi.injectEndpoints({
 
         // Creating a new FormData object
         const formData = new FormData();
-        formData.append('selfie', outImage);
+        formData.append('outImage', {
+          uri: outImage.uri,
+          name: outImage.name,
+          filename: outImage.filename,
+          type: outImage.type,
+        });
         // Append other payload data as needed
         Object.keys(rest).forEach(key => {
           formData.append(key, rest[key]);
@@ -98,7 +108,6 @@ export const attendanceApi = baseApi.injectEndpoints({
           url: 'Register',
           method: 'POST',
           body: formData,
-          // redirect: 'follow',
           headers: {
             // You may need to set appropriate headers for file upload
             Authorization: `Bearer ${API_TOKEN}`,

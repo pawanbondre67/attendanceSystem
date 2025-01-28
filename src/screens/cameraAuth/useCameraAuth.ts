@@ -115,7 +115,6 @@
 // export default useCameraAuth;
 
 import {useState} from 'react';
-import axios from 'axios';
 import RNFS from 'react-native-fs';
 
 import {useNavigation, CommonActions} from '@react-navigation/native';

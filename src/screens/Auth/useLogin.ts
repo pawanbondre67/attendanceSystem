@@ -94,17 +94,10 @@ const useLogin = () => {
           dispatch(setEmployeeDetails(customerData));
           await saveEmployeeDetailsToLocal(customerData);
 
-          //   const details = await getUserDetails(
-          //     response?.data?.employeeId.toString(),
-          //   ).unwrap();
-          //  console.log('userDetails', details);
-          //   await saveEmployeeDetails(response?.data?.employeeId, details.data);
-          //   dispatch(setEmployeeDetails(details?.data));
-          // dispatch(setPinMode(PinCodeT.Modes.Set));
-
           navigation.navigate(
-            // response?.data?.isAppRegistermandatory ? 'camera' : 'camera',
+            // response?.data?.isAppRegistermandatory ? 'camera' : 'home',
             'camera',
+
           );
         }
       } catch (error: any) {

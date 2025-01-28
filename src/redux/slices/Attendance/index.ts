@@ -4,6 +4,9 @@ import { CheckInOutData} from './types';
 const initialState: {CheckInOutData: CheckInOutData} = {
   CheckInOutData: {
     status: null,
+    checkInTime: null,
+    checkOutTime: null,
+    date: null,
   },
 };
 

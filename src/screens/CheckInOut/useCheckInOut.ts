@@ -1,8 +1,13 @@
-import {check} from 'react-native-permissions';
+import RNFS from 'react-native-fs';
 import {useCallback, useEffect, useState} from 'react';
 import {formatDate} from '../../helper/index';
 import useLocation from '../../helper/location';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import {
+  CommonActions,
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
 import NetInfo from '@react-native-community/netinfo';
@@ -10,7 +15,7 @@ import NetInfo from '@react-native-community/netinfo';
 import {
   useCheckOutMutation,
   useMarkAttendanceMutation,
-  useLatestStatusQuery,
+  // useLatestStatusQuery,
 } from '../../redux/services/attendance/attendanceApiSlice';
 
 // import {CheckInOutData} from '../../redux/slices/Attendance/index';
@@ -39,15 +44,13 @@ const useCheckInOut = () => {
   const dispatch = useAppDispatch();
   const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
 
-  const {CheckInOutData: attendanceData } = useAppSelector(
+  const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
   );
 
   console.log('CheckInOutData', attendanceData);
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
-  const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
-
-
+  // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
 
   const [checkOut, checkOutResult] = useCheckOutMutation();
   const route = useRoute<CheckInOutRouteProp>();
@@ -68,27 +71,25 @@ const useCheckInOut = () => {
     location: '',
   });
 
-  useEffect(() => {
-    if (latestStatusData) {
-      console.log('latestStatusData', latestStatusData);
-      dispatch(
-        setAttendanceData({
-          ...attendanceData,
-          status: latestStatusData.data.status,
-        }),
-      );
-    }
-  } , [latestStatusData]);
-  console.log('only after mark attendace data is updated' ,attendanceData);
+  // useEffect(() => {
+  //   if (latestStatusData) {
+  //     console.log('latestStatusData', latestStatusData);
+  //     dispatch(
+  //       setAttendanceData({
+  //         ...attendanceData,
+  //         status: latestStatusData.data.status,
+  //       }),
+  //     );
+  //   }
+  // } , [latestStatusData]);
+  // console.log('only after mark attendace data is updated', attendanceData);
 
   useEffect(() => {
     if (!checkInOutData.latitude || !checkInOutData.longitude) {
       setCheckinOutData(prevData => ({
         ...prevData,
-        currentCoordinates: {
-          longitude: currentLongitude,
-          latitude: currentLatitude,
-        },
+        longitude: currentLongitude,
+        latitude: currentLatitude,
       }));
     }
   }, [
@@ -99,7 +100,15 @@ const useCheckInOut = () => {
   ]);
 
   console.log('checkout result data', checkOutResult);
-  console.log('after marking attednase resp data', markAttendanceResult);
+  console.log('after marking attendance resp data', markAttendanceResult);
+  console.log('currentLong', currentLongitude);
+  console.log('currentLat', currentLatitude);
+  console.log('checkInOutData chi image', checkInOutData.image);
+
+  const {currentTime, currentDate} = formatDate();
+  const {employeeId} = useAppSelector(state => state.employee);
+  console.log('currentTime', currentTime);
+  console.log('currentDate', currentDate);
 
   const generateCheckinOutPayload = async () => {
     try {
@@ -108,38 +117,61 @@ const useCheckInOut = () => {
       const timestamp = new Date().getTime();
       const status = btnLabel.toLowerCase();
       const selfieName = `selfie_${timestamp}_${btnLabel.toLowerCase()}.jpg`;
-      const currentDate = formatDate(new Date());
-      const currentLat = checkInOutData.latitude;
-      const currentLong = checkInOutData.longitude;
+         // Validate image path
+    const filePath = checkInOutData?.image;
+    if (!filePath) {
+      throw new Error('Image path is null or undefined');
+    }
+
+    // Verify file access
+    const fileExists = await RNFS.exists(filePath);
+    if (!fileExists) {
+      throw new Error(`File not found: ${filePath}`);
+    }
       const payload: any = {
         status: status === 'checkin' ? 'in' : 'inout',
         mip: deviceIp,
         mid: deviceName,
-        selfie: checkInOutData?.image
-          ? {
-              uri: isIos
-                ? checkInOutData?.image
-                : `file://${checkInOutData?.image}`,
-              type: 'image/jpeg',
-              name: selfieName,
-            }
-          : null,
-        // batteryStatus: (await DeviceInfo.getBatteryLevel()) * 100,
+        employeeMaster_Fid: employeeId,
       };
       if (status === 'checkin') {
         payload.inDate = currentDate;
-        payload.inLat = currentLat;
-        payload.inLong = currentLong;
+        payload.inTime = currentTime;
+        payload.inLat = currentLongitude;
+        payload.inLong = currentLatitude;
+
+        payload.inImage = checkInOutData?.image
+          ? {
+              uri: isIos
+                ? filePath
+                : `file://${filePath}`,
+              name: selfieName,
+              filename: selfieName,
+              type: 'image/jpeg',
+            }
+          : null;
       } else if (status === 'checkout') {
         payload.outDate = currentDate;
-        payload.outLat = currentLat;
-        payload.outLong = currentLong;
+        payload.outTime = currentTime;
+        payload.outLat = currentLongitude;
+        payload.outLong = currentLatitude;
+
+        payload.outImage = checkInOutData?.image
+          ? {
+              uri: isIos
+              ? filePath
+              : `file://${filePath}`,
+              name: selfieName,
+              filename: selfieName,
+              type: 'image/jpeg',
+            }
+          : null;
       }
 
       return payload;
     } catch (err) {
-      console.error('Error generating payload:', error);
-      throw error;
+      console.error('Error generating payload:', err);
+      throw err;
     }
   };
 
@@ -152,16 +184,21 @@ const useCheckInOut = () => {
         setAttendanceData({
           ...attendanceData,
           // inTime: markAttendanceResult.data.data.inTime,
-          status: markAttendanceResult.data.data.status,
+          status: 'in',
+          checkInTime : currentTime,
+
+          
         }),
       );
-      navigation.replace('home');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'home'}],
+        }),
+      );
     }
 
-    if (
-      markAttendanceResult?.isError &&
-      markAttendanceResult?.error?.data?.message
-    ) {
+    if (markAttendanceResult?.isError && markAttendanceResult?.error) {
       console.error(
         'Error marking attendance:',
         markAttendanceResult.error.data.message,
@@ -172,10 +209,16 @@ const useCheckInOut = () => {
         setAttendanceData({
           ...attendanceData,
           // outTime: markAttendanceResult.data.data.outTime,
-          status: markAttendanceResult.data.data.status,
+          status: 'inout',
+          checkOutTime : currentTime,
         }),
       );
-      navigation.replace('home');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'home'}],
+        }),
+      );
     }
     if (checkOutResult?.isError && checkOutResult?.error?.data?.message) {
       console.error('Error checking out:', checkOutResult.error.data.message);
@@ -216,17 +259,27 @@ const useCheckInOut = () => {
     } else {
       try {
         const payload = await generateCheckinOutPayload();
-        console.log(payload);
+        console.log('payload', payload);
         // Check network connectivity
         NetInfo.fetch().then(async state => {
           if (state.isConnected) {
             // If connected, hit API request to backend
             const status = btnLabel.toLowerCase();
             if (status === 'checkin') {
-              markAttendance(payload);
+              const response = await markAttendance(payload);
+              console.log('Attendance Response:', response);
+              if (response.error) {
+                console.error('Error marking attendance:', response.error);
+                // Log the payload to identify null values
+                console.log('Payload with null values:', payload);
+              }
             } else if (status === 'checkout') {
-              console.log('checkout Payload', payload);
-              checkOut(payload);
+              const response = await checkOut(payload);
+              console.log('CheckOut Response:', response);
+              if (response.error) {
+                console.error('Error marking CheckOut:', response.error);
+                // Log the payload to identify null values
+                console.log('Payload with null values:', payload)
             }
           } else {
             // If not connected, hit SQL request
@@ -238,6 +291,7 @@ const useCheckInOut = () => {
               console.error('Error saving attendance:', innerError);
             }
           }
+        }
         });
       } catch (err) {
         console.error('Error submitting attendance:', err);

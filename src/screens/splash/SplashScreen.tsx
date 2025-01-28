@@ -12,7 +12,10 @@ import {useLatestStatusQuery} from '../../redux/services/attendance/attendanceAp
 import {useLazyLoginQuery} from '../../redux/services/auth/login/LoginApiSlice';
 import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
 import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
-import {setEmployeeId,setEmployeeDetails} from '../../redux/slices/Employee/index';
+import {
+  setEmployeeId,
+  setEmployeeDetails,
+} from '../../redux/slices/Employee/index';
 
 interface EmployeeDetails {
   CustomerCode: string;
@@ -41,8 +44,9 @@ const SplashScreen = () => {
     state => state.attendance,
   );
 
-  const [employeeDetails, setEmployeeDetail] =
-    useState<EmployeeDetails | null>(null);
+  const [employeeDetails, setEmployeeDetail] = useState<EmployeeDetails | null>(
+    null,
+  );
   const {data: latestStatusData, isLoading: isLatestStatusLoading} =
     useLatestStatusQuery();
   const [loginUser, loginResult] = useLazyLoginQuery();
@@ -75,7 +79,8 @@ const SplashScreen = () => {
 
   useEffect(() => {
     console.log(attendanceData); // Log after state update
-  }, [attendanceData]);
+    console.log('latestStatusData', latestStatusData);
+  }, [attendanceData, latestStatusData]);
 
   useEffect(() => {
     if (employeeDetails && !isLatestStatusLoading) {

@@ -1,26 +1,57 @@
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {
+  CommonActions,
+  NavigationProp,
+  useNavigation,
+} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {RootStackParamList} from '../../types/types';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAppSelector} from '../../redux/hook/hook';
-import moment from 'moment';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Clock from '../../components/Clock';
+import useLocation from '../../helper/location';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const getCurrentTimeIn12HourFormat = (): string => {
-  return moment().format('hh:mm A');
-};
-
 const HomeScreen = () => {
+  const [username, setUsername] = useState<string | null>(null);
+
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
-  const currenttime = getCurrentTimeIn12HourFormat();
 
-  const {status} = useAppSelector(state => state.attendance.CheckInOutData);
-  const {employeeDetails, employeeId} = useAppSelector(state => state.employee);
+  const {isFetchingLocation, currentLatitude, currentLongitude} = useLocation();
+  useEffect(() => {
+    getEmployeeDetailsFromLocal();
+  }, []);
+
+  const getEmployeeDetailsFromLocal = async () => {
+    try {
+      const employeeDetails = await AsyncStorage.getItem('employeeDetails');
+      if (employeeDetails !== null) {
+        const parsedDetails = JSON.parse(employeeDetails);
+        // console.log('Employee Details:', parsedDetails);
+        setUsername(parsedDetails.UserName);
+      }
+    } catch (error) {
+      console.error(
+        'Failed to retrieve employee details from local storage',
+        error,
+      );
+    }
+  };
+
+  const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
+  const {employeeId} = useAppSelector(state => state.employee);
   console.log('status returing from globsl state', status);
 
   // Function to delete employeeId from local storage
@@ -29,7 +60,12 @@ const HomeScreen = () => {
       await AsyncStorage.removeItem('employeeDetails');
       console.log('employeeId deleted from local storage');
       // Optionally, navigate to another screen or update state
-      navigation.replace('register');
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'register'}],
+        }),
+      );
     } catch (error) {
       console.error('Failed to delete employeeId from local storage', error);
     }
@@ -47,7 +83,7 @@ const HomeScreen = () => {
             }} // Placeholder image
           />
           <View>
-            <Text style={styles.userName}>Shivani</Text>
+            <Text style={styles.userName}>{username}</Text>
             <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
@@ -60,11 +96,24 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.container}>
-        {/* Time Display */}
+        {/* Time Display
         <View style={styles.timeSection}>
-          <Text style={styles.time}>{currenttime}</Text>
+          <Text style={styles.time}>{currentTime}</Text>
           <Text style={styles.date}>Feb 01, 2024 - Thursday</Text>
-        </View>
+        </View> */}
+        <Clock />
+
+        {isFetchingLocation ? (
+          <View>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loaderText}>Fetching location...</Text>
+          </View>
+        ) : (
+          <View>
+            <Text>Latitude: {currentLatitude}</Text>
+            <Text>Longitude: {currentLongitude}</Text>
+          </View>
+        )}
 
         {/* Punch In Button */}
         <View style={styles.container}>
@@ -101,12 +150,12 @@ const HomeScreen = () => {
         <View style={styles.punchDetails}>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{}AM</Text>
+            <Text style={styles.punchText}>{checkInTime}AM</Text>
             <Text style={styles.punchLabel}>Punch In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{} PM</Text>
+            <Text style={styles.punchText}>{checkOutTime} PM</Text>
             <Text style={styles.punchLabel}>Punch Out</Text>
           </View>
           <View style={styles.punchItem}>
@@ -176,17 +225,9 @@ const styles = StyleSheet.create({
   userId: {
     color: '#888',
   },
-  timeSection: {
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  time: {
-    fontSize: 48,
-    fontWeight: 'thin',
-  },
-  date: {
+  loaderText: {
+    marginTop: 10,
     fontSize: 16,
-    color: '#888',
   },
   outerCircle: {
     justifyContent: 'center',

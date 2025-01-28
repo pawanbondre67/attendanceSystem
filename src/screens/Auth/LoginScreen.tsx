@@ -11,8 +11,8 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState} from 'react';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../types/types';
+// import {NavigationProp, useNavigation} from '@react-navigation/native';
+// import {RootStackParamList} from '../../types/types';
 import {useTheme} from '../../theme/ThemeProvider';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -20,12 +20,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import useLogin from './useLogin';
 
 const LoginScreen = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const [password, setPassword] = useState('1234567');
   const [width] = useState(new Animated.Value(50)); // Initial width
   const [opacity] = useState(new Animated.Value(1)); // Initial opacity
   const [passwordVisible, setPasswordVisible] = useState(false);
-
 
   const {
     customerData: {CustomerCode, UserName, Password},
@@ -37,7 +36,7 @@ const LoginScreen = () => {
 
   console.log('Login Result:', loginResult);
   const handlePressIn = () => {
-console.log(CustomerCode, UserName, Password);
+    console.log(CustomerCode, UserName, Password);
     Animated.parallel([
       Animated.timing(width, {
         toValue: 300, // Expanded width
@@ -72,94 +71,100 @@ console.log(CustomerCode, UserName, Password);
   // console.log('User logged in:', user);
   return (
     <KeyboardAvoidingView
-    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    style={{flex: 1}}>
-    <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View>
-          <View style={styles.welcomeContainer}>
-            <Text>Welcome , to the app </Text>
-          </View>
-          {/* <KeyboardAvoidingView behavior="height"> */}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.linearGradient}>
+      <SafeAreaView style={styles.container}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <View>
+            <View style={styles.welcomeContainer}>
+              <Text>Welcome , to the app </Text>
+            </View>
+            {/* <KeyboardAvoidingView behavior="height"> */}
 
-          <View style={styles.overlay}>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Customer Code</Text>
-              <TextInput
-                style={[styles.input, {color: Colors.text}]}
-                placeholder="Enter your customerCode"
-                placeholderTextColor="#808080"
-                value={CustomerCode}
-                autoCapitalize="characters"
-                onChangeText={text => {
-                  updateCustomerData({CustomerCode: text});
-                }}
-              />
-              {errors.CustomerCode ? <Text style={styles.errorText} >{errors.CustomerCode}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Username</Text>
-              <TextInput
-                style={[styles.input, {color: Colors.text}]}
-                placeholder="Enter your username"
-                placeholderTextColor="#808080"
-                value={UserName}
-                onChangeText={text => {
-                  updateCustomerData({UserName: text});
-                }}
-              />
-              {errors.UserName ? <Text style={styles.errorText} >{errors.UserName}</Text> : null}
-            </View>
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordContainer}>
+            <View style={styles.overlay}>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Customer Code</Text>
                 <TextInput
                   style={[styles.input, {color: Colors.text}]}
-                  placeholder="Enter your password"
+                  placeholder="Enter your customerCode"
                   placeholderTextColor="#808080"
-                  value={Password}
-                  textContentType="password"
+                  value={CustomerCode}
+                  autoCapitalize="characters"
                   onChangeText={text => {
-                    updateCustomerData({Password: text});
+                    updateCustomerData({CustomerCode: text});
                   }}
-                  secureTextEntry={!passwordVisible}
                 />
-
-                <Pressable
-                  onPress={() => setPasswordVisible(!passwordVisible)}
-                  style={styles.eyeIconContainer}>
-                  <MaterialCommunityIcons
-                    name={passwordVisible ? 'eye-off' : 'eye'}
-                    size={24}
-                    color="#808080"
-                  />
-                </Pressable>
+                {errors.CustomerCode ? (
+                  <Text style={styles.errorText}>{errors.CustomerCode}</Text>
+                ) : null}
               </View>
-              {errors.Password ? <Text style={styles.errorText} >{errors.Password}</Text> : null}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Username</Text>
+                <TextInput
+                  style={[styles.input, {color: Colors.text}]}
+                  placeholder="Enter your username"
+                  placeholderTextColor="#808080"
+                  value={UserName}
+                  onChangeText={text => {
+                    updateCustomerData({UserName: text});
+                  }}
+                />
+                {errors.UserName ? (
+                  <Text style={styles.errorText}>{errors.UserName}</Text>
+                ) : null}
+              </View>
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Password</Text>
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    style={[styles.input, {color: Colors.text}]}
+                    placeholder="Enter your password"
+                    placeholderTextColor="#808080"
+                    value={Password}
+                    textContentType="password"
+                    onChangeText={text => {
+                      updateCustomerData({Password: text});
+                    }}
+                    secureTextEntry={!passwordVisible}
+                  />
+
+                  <Pressable
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                    style={styles.eyeIconContainer}>
+                    <MaterialCommunityIcons
+                      name={passwordVisible ? 'eye-off' : 'eye'}
+                      size={24}
+                      color="#808080"
+                    />
+                  </Pressable>
+                </View>
+                {errors.Password ? (
+                  <Text style={styles.errorText}>{errors.Password}</Text>
+                ) : null}
+              </View>
             </View>
           </View>
+        </TouchableWithoutFeedback>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            onPress={handleLogin}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            style={styles.button}>
+            <Animated.View style={[styles.animatedView, {width}]}>
+              <MaterialCommunityIcons
+                name="arrow-right-thin"
+                size={24}
+                color="#fff"
+              />
+            </Animated.View>
+            <Animated.Text style={[styles.text, {opacity}]}>
+              {' '}
+              slide to procced
+            </Animated.Text>
+          </Pressable>
         </View>
-      </TouchableWithoutFeedback>
-      <View style={styles.buttonContainer}>
-        <Pressable
-        onPress={handleLogin}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          style={styles.button}>
-          <Animated.View style={[styles.animatedView, {width}]}>
-            <MaterialCommunityIcons
-              name="arrow-right-thin"
-              size={24}
-              color="#fff"
-            />
-          </Animated.View>
-          <Animated.Text style={[styles.text, {opacity}]}>
-            {' '}
-            slide to procced
-          </Animated.Text>
-        </Pressable>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 };
@@ -229,7 +234,7 @@ const styles = StyleSheet.create({
     right: 10,
     top: 12,
   },
-  errorText:{
+  errorText: {
     color: 'red',
     fontSize: 12,
   },

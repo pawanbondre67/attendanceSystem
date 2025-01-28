@@ -22,7 +22,7 @@ const CameraAuth = () => {
   const [progress, setProgress] = useState(0);
   const [verificationProgress, setVerificationProgress] = useState(0);
 
-  const steps = ['straight', 'left', 'right'];
+  const steps = ['straight', 'left', 'right' , 'InPhoneImage'];
 
   useEffect(() => {
     const checkCameraPermission = async () => {
@@ -68,9 +68,9 @@ const CameraAuth = () => {
         ...prevPhotos,
         [steps[step]]: photo.path,
       }));
-     
-      setProgress((step + 1) / 3); // Update the progress bar
-      if (step < 2) {
+
+      setProgress((step + 1) / 4); // Update the progress bar
+      if (step < 3) {
         setStep(step + 1);
       } else {
         setStep(step + 1);
@@ -110,6 +110,8 @@ const CameraAuth = () => {
         Please{' '}
         {step === 0
           ? 'look straight'
+          : step === 3
+          ? 'set a profile picture'
           : `turn your face to the ${steps[step]} side`}
       </Text>
       <View style={styles.cameraContainer}>
@@ -128,16 +130,16 @@ const CameraAuth = () => {
         />
       </View>
       <View style={styles.verificationContainer}>
-        {step < 3 ? (
+        {step < 4 ? (
           <>
-            <Text style={styles.imageCount}>Image {step} of 3</Text>
+            <Text style={styles.imageCount}>Image {step} of 4</Text>
             <ProgressBar
               progress={progress}
               style={styles.progressBar}
               color="white"
             />
           </>
-        ) : step === 3 && verificationProgress < 100 ? (
+        ) : step === 4 && verificationProgress < 100 ? (
           <>
             <Text style={styles.progress}>{verificationProgress}%</Text>
             <Text style={styles.verifyingText}>Verifying Your Face</Text>
@@ -154,12 +156,12 @@ const CameraAuth = () => {
         )}
       </View>
 
-      {step === 3 && verificationProgress === 100 ? (
-        <AnimatedArrowButton submit={onsubmit} routeName="home"  />
+      {step === 4 && verificationProgress === 100 ? (
+        <AnimatedArrowButton submit={onsubmit} routeName="home" />
       ) : (
         <TouchableOpacity
           style={styles.captureButton}
-          disabled={step === 3}
+          disabled={step === 4}
           onPress={capturePhoto}>
           <Text style={styles.buttonText}>Capture</Text>
         </TouchableOpacity>

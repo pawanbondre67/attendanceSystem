@@ -1,5 +1,3 @@
-
-
 export interface CheckInPayload {
   mid: string;
   mip: string;
@@ -29,14 +27,33 @@ export interface CheckOutPayload {
 export interface registerPayload {
   mid: string;
   mip: string;
-  EmployeeMaster_Fid : string,
-  IMEINumber : string,
-  AppImage_I : string,
-  AppImage_II : string,
-  AppImage_III : string,
-  InPhoneImage : string,
+  EmployeeMaster_Fid: string;
+  IMEINumber: string;
+  AppImage_I: {
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
+  };
+  AppImage_II: {
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
+  };
+  AppImage_III: {
+    uri: string;
+    name: string;
+    filename: string;
+    type: string;
+  };
+  InPhoneImage: {
+    uri?: string;
+    name?: string;
+    filename?: string;
+    type?: string;
+  };
   [key: string]: any;
-
 }
 // Define the updated AttendanceLogData type (alternative if list is used)
 // export interface AttendanceLogData {

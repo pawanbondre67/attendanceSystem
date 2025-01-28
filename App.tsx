@@ -28,7 +28,7 @@ const getDeviceInfo = async () => {
       // Request permission
       const requestStatus = await request(PERMISSIONS.ANDROID.READ_PHONE_STATE);
       if (requestStatus === RESULTS.GRANTED) {
-        fetchIMEI();
+        return console.log('Permission Granted');
       } else {
         Alert.alert(
           'Permission Denied',
@@ -39,14 +39,14 @@ const getDeviceInfo = async () => {
   } else if (Platform.OS === 'ios') {
     // iOS doesn't allow access to IMEI, use a unique identifier
     const uniqueId = DeviceInfo.getUniqueId();
-    Alert.alert('Device Identifier', `Unique ID: ${uniqueId}`);
+    console.log('Device Identifier', `Unique ID: ${uniqueId}`);
   }
 };
 
 const fetchIMEI = async () => {
   try {
     const imei = await DeviceInfo.getDeviceId();
-    Alert.alert('Device IMEI', `IMEI: ${imei}`);
+    console.log('Device IMEI', `IMEI: ${imei}`);
   } catch (error) {
     console.error('Failed to get IMEI:', error);
     Alert.alert('Error', 'Failed to retrieve IMEI.');

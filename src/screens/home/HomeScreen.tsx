@@ -15,16 +15,16 @@ const getCurrentTimeIn12HourFormat = (): string => {
 };
 
 const HomeScreen = () => {
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
   const currenttime = getCurrentTimeIn12HourFormat();
 
   const {status} = useAppSelector(state => state.attendance.CheckInOutData);
+  const {employeeDetails, employeeId} = useAppSelector(state => state.employee);
   console.log('status returing from globsl state', status);
 
-   // Function to delete employeeId from local storage
-   const deleteEmployeeId = async () => {
+  // Function to delete employeeId from local storage
+  const deleteEmployeeId = async () => {
     try {
       await AsyncStorage.removeItem('employeeDetails');
       console.log('employeeId deleted from local storage');
@@ -47,11 +47,16 @@ const HomeScreen = () => {
             }} // Placeholder image
           />
           <View>
-            <Text style={styles.userName}>HEY JHONE DOE</Text>
-            <Text style={styles.userId}>MZ001234</Text>
+            <Text style={styles.userName}>Shivani</Text>
+            <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
-        <Icon name="refresh" onPress={deleteEmployeeId} size={24} color="#000" />
+        <Icon
+          name="refresh"
+          onPress={deleteEmployeeId}
+          size={24}
+          color="#000"
+        />
       </View>
 
       <View style={styles.container}>

@@ -58,24 +58,47 @@ export const attendanceApi = baseApi.injectEndpoints({
 
     register: builder.mutation<any, registerPayload>({
       query: payload => {
-        const {AppImage_I, AppImage_II, AppImage_III, InPhoneImage, ...rest} =
+        const {AppImage_I, AppImage_II, AppImage_III,InPhoneImage, ...rest} =
           payload;
 
         // Creating a new FormData object
         const formData = new FormData();
-        formData.append('AppImage_I', AppImage_I);
-        formData.append('AppImage_II', AppImage_II);
-        formData.append('AppImage_III', AppImage_III);
-        formData.append('InPhoneImage', InPhoneImage || '');
+
+        formData.append('AppImage_I', {
+          uri: AppImage_I.uri,
+          name: AppImage_I.name,
+          filename: AppImage_I.filename,
+          type: AppImage_I.type,
+        });
+        formData.append('AppImage_II', {
+          uri: AppImage_II.uri,
+          name: AppImage_II.name,
+          filename: AppImage_II.filename,
+          type: AppImage_II.type,
+        });
+        formData.append('AppImage_III', {
+          uri: AppImage_III.uri,
+          name: AppImage_III.name,
+          filename: AppImage_III.filename,
+          type: AppImage_III.type,
+        });
+        formData.append('InPhoneImage', {
+          uri: InPhoneImage.uri,
+          name: InPhoneImage.name,
+          filename: InPhoneImage.filename,
+          type: InPhoneImage.type,
+        });
+
         // Append other payload data as needed
         Object.keys(rest).forEach(key => {
           formData.append(key, rest[key]);
         });
         console.log('register FormData', formData);
         return {
-          url: 'register',
+          url: 'Register',
           method: 'POST',
           body: formData,
+          // redirect: 'follow',
           headers: {
             // You may need to set appropriate headers for file upload
             Authorization: `Bearer ${API_TOKEN}`,

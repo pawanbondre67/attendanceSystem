@@ -150,12 +150,12 @@ const HomeScreen = () => {
         <View style={styles.punchDetails}>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{checkInTime}AM</Text>
+            <Text style={styles.punchText}>{checkInTime ? checkInTime : '00:00'}</Text>
             <Text style={styles.punchLabel}>Punch In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{checkOutTime} PM</Text>
+            <Text style={styles.punchText}>{checkOutTime ? checkOutTime : '00:00'}</Text>
             <Text style={styles.punchLabel}>Punch Out</Text>
           </View>
           <View style={styles.punchItem}>

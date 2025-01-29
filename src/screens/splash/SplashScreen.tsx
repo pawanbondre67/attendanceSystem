@@ -23,22 +23,9 @@ interface EmployeeDetails {
   Password: string;
 }
 
-const getEmployeeDetailsFromLocal =
-  async (): Promise<EmployeeDetails | null> => {
-    try {
-      const jsonValue = await AsyncStorage.getItem('employeeDetails');
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (error) {
-      console.error(
-        'Failed to retrieve employee details from local storage',
-        error,
-      );
-      return null;
-    }
-  };
-
 const SplashScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [isInitialized, setIsInitialized] = useState(false);
   const dispatch = useAppDispatch();
   const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
@@ -51,23 +38,60 @@ const SplashScreen = () => {
     useLatestStatusQuery();
   const [loginUser, loginResult] = useLazyLoginQuery();
 
+  const getEmployeeDetailsFromLocal =
+    async (): Promise<EmployeeDetails | null> => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('employeeDetails');
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+      } catch (error) {
+        console.error(
+          'Failed to retrieve employee details from local storage',
+          error,
+        );
+        return null;
+      }
+    };
+
+  const checkUserLoggedIn = async (details: EmployeeDetails) => {
+    try {
+      const response = await loginUser(details, false).unwrap();
+      dispatch(setEmployeeId(response?.data?.employeeId.toString()));
+      dispatch(setEmployeeDetails(details));
+      console.log('User logged in using local storage data');
+    } catch (error) {
+      console.error('Failed to check user logged in', error);
+    }
+  };
+
   useEffect(() => {
     const initialize = async () => {
       // Fetch employee details from local storage
       const details = await getEmployeeDetailsFromLocal();
-      setEmployeeDetail(details);
+
+      // Only update state if details are different
+      if (
+        details &&
+        JSON.stringify(details) !== JSON.stringify(employeeDetails)
+      ) {
+        setEmployeeDetail(details);
+      }
 
       // Check if user is logged in
       if (details) {
         await checkUserLoggedIn(details);
       }
+      setIsInitialized(true);
     };
 
     initialize();
   }, []);
 
   useEffect(() => {
-    if (latestStatusData) {
+    if (
+      latestStatusData?.data?.status &&
+      !isLatestStatusLoading &&
+      latestStatusData?.data?.status !== attendanceData.status // ✅ Avoid redundant updates
+    ) {
       dispatch(
         setAttendanceData({
           ...attendanceData,
@@ -75,15 +99,16 @@ const SplashScreen = () => {
         }),
       );
     }
-  }, [latestStatusData, dispatch, attendanceData]);
+  }, [latestStatusData, dispatch, isLatestStatusLoading, attendanceData]);
 
   useEffect(() => {
-    console.log(attendanceData); // Log after state update
-    console.log('latestStatusData', latestStatusData);
-  }, [attendanceData, latestStatusData]);
+    if (!isInitialized || isLatestStatusLoading) {
+      return;
+    }
 
-  useEffect(() => {
-    if (employeeDetails && !isLatestStatusLoading) {
+    const currentRoute = navigation.getState().routes?.[0]?.name;
+
+    if (employeeDetails && currentRoute !== 'home') {
       console.log('Navigating to home');
       navigation.dispatch(
         CommonActions.reset({
@@ -91,7 +116,7 @@ const SplashScreen = () => {
           routes: [{name: 'home'}],
         }),
       );
-    } else if (!employeeDetails && !isLatestStatusLoading) {
+    } else if (!employeeDetails && currentRoute !== 'register') {
       console.log('Navigating to login');
       navigation.dispatch(
         CommonActions.reset({
@@ -100,20 +125,21 @@ const SplashScreen = () => {
         }),
       );
     }
-  }, [employeeDetails, isLatestStatusLoading, navigation]);
+  }, [isInitialized, employeeDetails, isLatestStatusLoading, navigation]);
 
-  const checkUserLoggedIn = async (details: EmployeeDetails) => {
-    try {
-      if (loginResult.data === undefined) {
-        const response = await loginUser(details, false).unwrap();
-        dispatch(setEmployeeId(response?.data?.employeeId.toString()));
-        dispatch(setEmployeeDetails(details));
-        console.log('User logged in using local storage data');
-      }
-    } catch (error) {
-      console.error('Failed to check user logged in', error);
-    }
-  };
+  useEffect(() => {
+    console.log('loginResult', loginResult);
+    console.log('employeeDetails', employeeDetails);
+    console.log('isInitialized', isInitialized);
+    console.log('isLatestStatusLoading', isLatestStatusLoading);
+    console.log('attendanceData', latestStatusData);
+  }, [
+    loginResult,
+    employeeDetails,
+    isInitialized,
+    isLatestStatusLoading,
+    latestStatusData,
+  ]);
 
   return (
     <View style={styles.container}>

@@ -54,6 +54,8 @@ const useLocation = () => {
     };
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
+
+
   const getOneTimeLocation = () => {
     setIsFetchingLocation(true);
     setLocationStatus('Getting Location ...');
@@ -69,6 +71,7 @@ const useLocation = () => {
       error => {
         setIsFetchingLocation(false);
         setLocationStatus(error.message);
+        console.error('one time',error.message);
         if (error.code === 2) {
           // GPS is off, prompt user to turn it on
           Alert.alert(
@@ -81,7 +84,7 @@ const useLocation = () => {
       },
       {
         enableHighAccuracy: false,
-        timeout: 30000,
+        timeout: 20000,
         maximumAge: 1000,
       },
     );
@@ -93,17 +96,18 @@ const useLocation = () => {
       position => {
         setIsFetchingLocation(false);
         setLocationStatus('Location Fetched successfully');
-        // const currentLongitude = position.coords.longitude;
-        // const currentLatitude = position.coords.latitude;
+        console.warn('Location Fetched successfully');
         setCurrentLongitude(position.coords.longitude);
         setCurrentLatitude(position.coords.latitude);
       },
       error => {
         setIsFetchingLocation(false);
+        console.error(error.message);
         setLocationStatus(error.message);
       },
       {
         enableHighAccuracy: false,
+        distanceFilter: 10, // fetch location updates if device has moved at least 10 meters
         maximumAge: 1000,
       },
     );
@@ -162,3 +166,4 @@ const useLocation = () => {
 };
 
 export default useLocation;
+

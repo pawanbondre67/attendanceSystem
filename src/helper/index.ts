@@ -55,6 +55,13 @@ function transformDataForDropDown(data: LocationData[]): TransformedData[] {
 //     outBound: inRange ? 0 : distanceDifference,
 //   };
 // }
+function convertTo12HourFormat(time24: string): string {
+  const [hours, minutes] = time24.split(':');
+  const period = +hours >= 12 ? 'PM' : 'AM';
+  const hours12 = +hours % 12 || 12;
+  return `${hours12}:${minutes} ${period}`;
+}
+
 function formatDate() {
   const date = new Date(); // Current date and time
   const year = date.getFullYear();
@@ -65,8 +72,11 @@ function formatDate() {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
   const currentDate = `${year}-${month}-${day}`;
-  const currentTime = `${hours}:${minutes}:${seconds}.${milliseconds}`;
-  return {currentDate, currentTime};
+  const currentTime24 = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+  const currentTime12 = convertTo12HourFormat(`${hours}:${minutes}`);
+  // const checkinTime = convertTo12HourFormat(`${hours}:${minutes}`);
+  // const checkoutTime = convertTo12HourFormat(`${hours}:${minutes}`);
+  return {currentDate, currentTime: currentTime24 , currentTime12};
 }
 
 export {

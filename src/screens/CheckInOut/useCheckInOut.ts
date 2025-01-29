@@ -103,9 +103,9 @@ const useCheckInOut = () => {
   console.log('after marking attendance resp data', markAttendanceResult);
   console.log('currentLong', currentLongitude);
   console.log('currentLat', currentLatitude);
-  console.log('checkInOutData chi image', checkInOutData.image);
+  console.log('checkInOutData chi image', checkInOutData);
 
-  const {currentTime, currentDate} = formatDate();
+  const {currentTime, currentDate ,currentTime12} = formatDate();
   const {employeeId} = useAppSelector(state => state.employee);
   console.log('currentTime', currentTime);
   console.log('currentDate', currentDate);
@@ -117,17 +117,21 @@ const useCheckInOut = () => {
       const timestamp = new Date().getTime();
       const status = btnLabel.toLowerCase();
       const selfieName = `selfie_${timestamp}_${btnLabel.toLowerCase()}.jpg`;
-         // Validate image path
-    const filePath = checkInOutData?.image;
-    if (!filePath) {
-      throw new Error('Image path is null or undefined');
-    }
+      // Validate image path
+      const filePath = checkInOutData?.image;
+      if (!filePath) {
+        throw new Error('Image path is null or undefined');
+      }
 
-    // Verify file access
-    const fileExists = await RNFS.exists(filePath);
-    if (!fileExists) {
-      throw new Error(`File not found: ${filePath}`);
-    }
+      // Verify file access
+      const fileExists = await RNFS.exists(filePath);
+      if (!fileExists) {
+        throw new Error(`File not found: ${filePath}`);
+      }
+
+      if (currentLatitude === null || currentLongitude === null) {
+        throw new Error('Location not fetched');
+      }
       const payload: any = {
         status: status === 'checkin' ? 'in' : 'inout',
         mip: deviceIp,
@@ -137,14 +141,12 @@ const useCheckInOut = () => {
       if (status === 'checkin') {
         payload.inDate = currentDate;
         payload.inTime = currentTime;
-        payload.inLat = currentLongitude;
-        payload.inLong = currentLatitude;
+        payload.inLat = checkInOutData?.latitude;
+        payload.inLong = checkInOutData?.longitude;
 
         payload.inImage = checkInOutData?.image
           ? {
-              uri: isIos
-                ? filePath
-                : `file://${filePath}`,
+              uri: isIos ? filePath : `file://${filePath}`,
               name: selfieName,
               filename: selfieName,
               type: 'image/jpeg',
@@ -153,14 +155,12 @@ const useCheckInOut = () => {
       } else if (status === 'checkout') {
         payload.outDate = currentDate;
         payload.outTime = currentTime;
-        payload.outLat = currentLongitude;
-        payload.outLong = currentLatitude;
+        payload.outLat = checkInOutData.latitude;
+        payload.outLong = checkInOutData.longitude;
 
         payload.outImage = checkInOutData?.image
           ? {
-              uri: isIos
-              ? filePath
-              : `file://${filePath}`,
+              uri: isIos ? filePath : `file://${filePath}`,
               name: selfieName,
               filename: selfieName,
               type: 'image/jpeg',
@@ -185,9 +185,7 @@ const useCheckInOut = () => {
           ...attendanceData,
           // inTime: markAttendanceResult.data.data.inTime,
           status: 'in',
-          checkInTime : currentTime,
-
-          
+          checkInTime: currentTime12,
         }),
       );
       navigation.dispatch(
@@ -210,7 +208,7 @@ const useCheckInOut = () => {
           ...attendanceData,
           // outTime: markAttendanceResult.data.data.outTime,
           status: 'inout',
-          checkOutTime : currentTime,
+          checkOutTime: currentTime12,
         }),
       );
       navigation.dispatch(
@@ -279,19 +277,19 @@ const useCheckInOut = () => {
               if (response.error) {
                 console.error('Error marking CheckOut:', response.error);
                 // Log the payload to identify null values
-                console.log('Payload with null values:', payload)
-            }
-          } else {
-            // If not connected, hit SQL request
-            try {
-              // await saveAttendance(payload);
-              console.log('attendance saved ', payload);
-              // dispatch(setSnackMessage('Attendance saved offline'));
-            } catch (innerError) {
-              console.error('Error saving attendance:', innerError);
+                console.log('Payload with null values:', payload);
+              }
+            } else {
+              // If not connected, hit SQL request
+              try {
+                // await saveAttendance(payload);
+                console.log('attendance saved ', payload);
+                // dispatch(setSnackMessage('Attendance saved offline'));
+              } catch (innerError) {
+                console.error('Error saving attendance:', innerError);
+              }
             }
           }
-        }
         });
       } catch (err) {
         console.error('Error submitting attendance:', err);

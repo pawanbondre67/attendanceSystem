@@ -1,5 +1,11 @@
 import React, {useState, useRef, useEffect} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
 import {Camera, useCameraDevice} from 'react-native-vision-camera';
 import LottieView from 'lottie-react-native';
 import {ProgressBar} from 'react-native-paper';
@@ -10,6 +16,7 @@ import {Platform} from 'react-native';
 import useCameraAuth from './useCameraAuth';
 const CameraAuth = () => {
   const {onsubmit, images, setImages} = useCameraAuth();
+  const {height, width} = Dimensions.get('window');
 
   const device = useCameraDevice('front');
   const camera = useRef(null);
@@ -22,7 +29,7 @@ const CameraAuth = () => {
   const [progress, setProgress] = useState(0);
   const [verificationProgress, setVerificationProgress] = useState(0);
 
-  const steps = ['straight', 'left', 'right' , 'InPhoneImage'];
+  const steps = ['straight', 'left', 'right', 'InPhoneImage'];
 
   useEffect(() => {
     const checkCameraPermission = async () => {
@@ -114,7 +121,7 @@ const CameraAuth = () => {
           ? 'set a profile picture'
           : `turn your face to the ${steps[step]} side`}
       </Text>
-      <View style={styles.cameraContainer}>
+      <View style={[styles.cameraContainer, {height: height * 0.4}]}>
         <Camera
           style={styles.camera}
           device={device}
@@ -159,36 +166,25 @@ const CameraAuth = () => {
       {step === 4 && verificationProgress === 100 ? (
         <AnimatedArrowButton submit={onsubmit} routeName="home" />
       ) : (
-        <TouchableOpacity
-          style={styles.captureButton}
-          disabled={step === 4}
-          onPress={capturePhoto}>
-          <Text style={styles.buttonText}>Capture</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.captureButton}
+            disabled={step === 4}
+            onPress={capturePhoto}>
+            <Text style={styles.buttonText}>Capture</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  CompleteLogo: {
-    width: 200,
-    height: 200,
-    position: 'absolute',
-    bottom: -80,
-    // backgroundColor: 'white',
-    zIndex: 10,
-  },
-  imageCount: {
-    fontSize: 16,
-    color: '#fff',
-    textAlign: 'center',
-  },
   container: {
     flex: 1,
     backgroundColor: '#0E1822',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 40,
   },
@@ -201,41 +197,73 @@ const styles = StyleSheet.create({
   subheading: {
     fontSize: 16,
     color: '#aaa',
-
-    // marginBottom: 20,
+    marginBottom: 30,
+    marginTop: 20,
   },
-  cameraContainer: {
-    flex: 1,
-    // backgroundColor: 'red',
+  // cameraContainer: {
+  //   flex: 1,
+  //   // backgroundColor: 'red',
 
+  //   width: '100%',
+  //   // justifyContent: 'center',
+  //   // alignItems: 'center',
+  //   position: 'relative', // Make sure the container is positioned relatively
+  // },
+  // camera: {
+  //   width: '100%', // Make the camera fill the container
+  //   height: 300, // Make the camera fill the container
+  //   position: 'absolute', // Ensure it covers the entire container
+  //   top: 60, // Align the top of the camera to the top of the container
+  // },
+  // lottie: {
+  //   width: '100%', // Lottie animation takes the same width as the camera
+  //   height: '100%', // Lottie animation takes the same height as the camera
+  //   position: 'absolute', // Ensure the Lottie animation overlaps the camera
+  //   top: -80, // Align the top of the Lottie to the top of the container
+  //   // Align the left of the Lottie to the left of the container
+  // },
+
+  cameraContainer: {
+    width: '90%',
+
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: 'white',
+    borderWidth: 2,
+    borderColor: '#00BFA6',
+    position: 'relative', // Make sure the container is positioned relatively
+    marginVertical: 20,
+  },
+  camera: {
+    flex: 1,
+  },
+  lottie: {
+    position: 'absolute',
+    width: '100%',
+    height: '100  %',
+  },
+  CompleteLogo: {
+    width: 200,
+    height: 200,
+  },
+  imageCount: {
+    fontSize: 16,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  buttonContainer: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // Make sure the container is positioned relatively
-  },
-  camera: {
-    width: '100%', // Make the camera fill the container
-    height: 300, // Make the camera fill the container
-    position: 'absolute', // Ensure it covers the entire container
-    top: 60, // Align the top of the camera to the top of the container
-  },
-  lottie: {
-    width: '100%', // Lottie animation takes the same width as the camera
-    height: '100%', // Lottie animation takes the same height as the camera
-    position: 'absolute', // Ensure the Lottie animation overlaps the camera
-    top: -80, // Align the top of the Lottie to the top of the container
-    // Align the left of the Lottie to the left of the container
   },
   captureButton: {
-    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#00BFA6', // Color from the image
     paddingVertical: 10,
-    width: '80%',
-    paddingHorizontal: 20,
+    width: '90%',
     gap: 10,
     borderRadius: 15,
-    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 4},
     shadowOpacity: 0.3,
@@ -243,13 +271,16 @@ const styles = StyleSheet.create({
     elevation: 5, // For Android shadow
   },
   buttonText: {
+    textAlign: 'center',
     color: '#fff',
     fontSize: 18,
   },
   verificationContainer: {
-    position: 'absolute',
-    bottom: 150,
+    width: '100%',
     alignItems: 'center',
+    marginVertical: 40,
+    height: 100,
+    justifyContent: 'center',
   },
   instruction: {
     fontSize: 16,
@@ -272,6 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   doneButtonText: {
+    textAlign: 'center',
     color: '#fff',
     fontSize: 18,
   },

@@ -21,6 +21,8 @@ import {
 // import {CheckInOutData} from '../../redux/slices/Attendance/index';
 import {isIos} from '../../helper/utility';
 import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import useLocalStorage from '../home/useLocalStorage';
 
 // Define types for state and function parameters
 interface CheckInOutData {
@@ -43,6 +45,7 @@ type CheckInOutRouteProp = RouteProp<{params: RouteParams}, 'params'>;
 const useCheckInOut = () => {
   const dispatch = useAppDispatch();
   const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
+  const {storeAttendanceData} = useLocalStorage();
 
   const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
@@ -102,10 +105,10 @@ const useCheckInOut = () => {
   console.log('checkout result data', checkOutResult);
   console.log('after marking attendance resp data', markAttendanceResult);
   console.log('currentLong', currentLongitude);
-  console.log('currentLat', currentLatitude);
+  console.log('currentLat inside hook', currentLatitude);
   console.log('checkInOutData chi image', checkInOutData);
 
-  const {currentTime, currentDate ,currentTime12} = formatDate();
+  const {currentTime, currentDate, currentTime12} = formatDate();
   const {employeeId} = useAppSelector(state => state.employee);
   console.log('currentTime', currentTime);
   console.log('currentDate', currentDate);
@@ -141,8 +144,12 @@ const useCheckInOut = () => {
       if (status === 'checkin') {
         payload.inDate = currentDate;
         payload.inTime = currentTime;
-        payload.inLat = checkInOutData?.latitude;
-        payload.inLong = checkInOutData?.longitude;
+        payload.inLat = checkInOutData?.latitude
+          ? checkInOutData.latitude
+          : currentLatitude;
+        payload.inLong = checkInOutData?.longitude
+          ? checkInOutData.longitude
+          : currentLongitude;
 
         payload.inImage = checkInOutData?.image
           ? {
@@ -155,8 +162,12 @@ const useCheckInOut = () => {
       } else if (status === 'checkout') {
         payload.outDate = currentDate;
         payload.outTime = currentTime;
-        payload.outLat = checkInOutData.latitude;
-        payload.outLong = checkInOutData.longitude;
+        payload.outLat = checkInOutData.latitude
+          ? checkInOutData.latitude
+          : currentLatitude;
+        payload.outLong = checkInOutData.longitude
+          ? checkInOutData.longitude
+          : currentLongitude;
 
         payload.outImage = checkInOutData?.image
           ? {
@@ -180,14 +191,14 @@ const useCheckInOut = () => {
       markAttendanceResult?.isSuccess &&
       markAttendanceResult?.data?.message
     ) {
-      dispatch(
-        setAttendanceData({
-          ...attendanceData,
-          // inTime: markAttendanceResult.data.data.inTime,
-          status: 'in',
-          checkInTime: currentTime12,
-        }),
-      );
+      const updatedAttendanceData = {
+        ...attendanceData,
+        status: 'in',
+        checkInTime: currentTime12,
+      };
+
+      dispatch(setAttendanceData(updatedAttendanceData));
+      storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -203,14 +214,14 @@ const useCheckInOut = () => {
       );
     }
     if (checkOutResult?.isSuccess && checkOutResult?.data?.message) {
-      dispatch(
-        setAttendanceData({
-          ...attendanceData,
-          // outTime: markAttendanceResult.data.data.outTime,
-          status: 'inout',
-          checkOutTime: currentTime12,
-        }),
-      );
+      const updatedAttendanceData = {
+        ...attendanceData,
+        status: 'inout',
+        checkOutTime: currentTime12,
+      };
+
+      dispatch(setAttendanceData(updatedAttendanceData));
+      storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
@@ -358,8 +369,6 @@ const useCheckInOut = () => {
     markAttendanceResult,
     proceedMarkAttendance,
     onPhotoCapture,
-    currentLatitude,
-    currentLongitude,
   };
 };
 

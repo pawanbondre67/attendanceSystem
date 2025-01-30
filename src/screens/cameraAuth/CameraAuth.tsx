@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   lottie: {
     position: 'absolute',
     width: '100%',
-    height: '100  %',
+    height: '100%',
   },
   CompleteLogo: {
     width: 200,

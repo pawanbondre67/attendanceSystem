@@ -9,13 +9,14 @@ import {
   Alert,
 } from 'react-native';
 
-import {Button} from 'react-native-paper';
+import {ActivityIndicator, Button} from 'react-native-paper';
 import useCheckInOut from './useCheckInOut';
 import {Camera, PhotoFile, useCameraDevice} from 'react-native-vision-camera';
 // import {isIos, isAndroid} from '../../helper/utility';
 import {PERMISSIONS, request} from 'react-native-permissions';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import { isIos } from '../../helper/utility';
+import useLocation from '../../helper/location';
 
 
 type Props = {};
@@ -23,16 +24,13 @@ const CheckInOut = (props: Props) => {
   const {
     checkInOutData,
     onSubmit,
-    errorState,
-    btnLabel,
-    isFetchingLocation,
     markAttendanceResult,
-    proceedMarkAttendance,
+
     onPhotoCapture,
-    currentLatitude,
-    pickImage,
-    currentLongitude,
+
   } = useCheckInOut();
+
+  const {getOneTimeLocation , currentLatitude , currentLongitude , isFetchingLocation  } = useLocation();
 
   const device = useCameraDevice('front');
 
@@ -143,6 +141,9 @@ const CheckInOut = (props: Props) => {
     );
   };
 
+
+  console.log('currentLatitude in checkout page',currentLatitude);
+
   return (
     // checkInOutData.showCamera ? (
     //   <CaptureImage onPhotoCapture={onPhotoCapture} />
@@ -152,7 +153,7 @@ const CheckInOut = (props: Props) => {
         <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
           {capturedImage ? (
             <Image
-              source={{uri: 'file://' + capturedImage}}
+              source={{uri:capturedImage}}
               style={styles.image}
             />
           ) : showCamera ? (
@@ -171,6 +172,21 @@ const CheckInOut = (props: Props) => {
           )}
         </TouchableOpacity>
         <Text style={styles.note}>Make sure to upload a clear face selfie</Text>
+
+        {isFetchingLocation ? (
+          <View>
+            <ActivityIndicator size="small" color="#0000ff" />
+          </View>
+        ) : (
+          <View >
+            <Text>Latitude: {currentLatitude}</Text>
+            <Text>Longitude: {currentLongitude}</Text>
+
+            <Button onPress={getOneTimeLocation} >
+            Refresh Location
+            </Button>
+          </View>
+        )}
       </View>
 
       <View style={styles.button}>

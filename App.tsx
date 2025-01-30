@@ -15,6 +15,7 @@ import {check, request, PERMISSIONS, RESULTS} from 'react-native-permissions';
 import {Provider} from 'react-redux';
 import {store} from './src/redux/store/store';
 import {PaperProvider} from 'react-native-paper';
+import SnackBar from './src/components/snackbar';
 
 const getDeviceInfo = async () => {
   if (Platform.OS === 'android') {
@@ -71,6 +72,7 @@ function App(): React.JSX.Element {
 
               {/* <GestureHandlerRootView> */}
               <NavigationContainer>
+              <SnackBar />
                 <RootStack />
               </NavigationContainer>
               {/* </GestureHandlerRootView> */}

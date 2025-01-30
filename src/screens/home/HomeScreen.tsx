@@ -3,7 +3,7 @@ import {
   NavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -20,44 +20,30 @@ import {useAppSelector} from '../../redux/hook/hook';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clock from '../../components/Clock';
 import useLocation from '../../helper/location';
+import useLocalStorage from './useLocalStorage';
+import { Button } from 'react-native';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const HomeScreen = () => {
-  const [username, setUsername] = useState<string | null>(null);
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
 
-  const {isFetchingLocation, currentLatitude, currentLongitude} = useLocation();
-  useEffect(() => {
-    getEmployeeDetailsFromLocal();
-  }, []);
-
-  const getEmployeeDetailsFromLocal = async () => {
-    try {
-      const employeeDetails = await AsyncStorage.getItem('employeeDetails');
-      if (employeeDetails !== null) {
-        const parsedDetails = JSON.parse(employeeDetails);
-        // console.log('Employee Details:', parsedDetails);
-        setUsername(parsedDetails.UserName);
-      }
-    } catch (error) {
-      console.error(
-        'Failed to retrieve employee details from local storage',
-        error,
-      );
-    }
-  };
-
-  const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
+  const {isFetchingLocation, currentLatitude, currentLongitude , getOneTimeLocation} = useLocation();
+console.log('currentLatitude at home screen', currentLatitude);
+  // const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
   const {employeeId} = useAppSelector(state => state.employee);
-  console.log('status returing from globsl state', status);
+  // console.log('status returing from globsl state', status);
+
+  const {employeeDetails, attendanceData} = useLocalStorage();
+  console.log('employeeDetails', employeeDetails);
+  console.log('attendanceData', attendanceData);
 
   // Function to delete employeeId from local storage
   const deleteEmployeeId = async () => {
     try {
       await AsyncStorage.removeItem('employeeDetails');
+      await AsyncStorage.removeItem('attendanceData');
       console.log('employeeId deleted from local storage');
       // Optionally, navigate to another screen or update state
       navigation.dispatch(
@@ -83,7 +69,7 @@ const HomeScreen = () => {
             }} // Placeholder image
           />
           <View>
-            <Text style={styles.userName}>{username}</Text>
+            <Text style={styles.userName}>{employeeDetails?.UserName}</Text>
             <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
@@ -109,15 +95,17 @@ const HomeScreen = () => {
             <Text style={styles.loaderText}>Fetching location...</Text>
           </View>
         ) : (
-          <View>
+          <View style={styles.location}>
             <Text>Latitude: {currentLatitude}</Text>
             <Text>Longitude: {currentLongitude}</Text>
+
+            <Button title="Refresh Location" onPress={getOneTimeLocation} />
           </View>
         )}
 
         {/* Punch In Button */}
         <View style={styles.container}>
-          {status === 'in' ? (
+          {attendanceData?.status === 'in' ? (
             <View style={styles.outerCircle}>
               <TouchableOpacity
                 style={styles.button}
@@ -150,12 +138,20 @@ const HomeScreen = () => {
         <View style={styles.punchDetails}>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{checkInTime ? checkInTime : '00:00'}</Text>
+            <Text style={styles.punchText}>
+              {attendanceData?.checkInTime
+                ? attendanceData?.checkInTime
+                : '00:00'}
+            </Text>
             <Text style={styles.punchLabel}>Punch In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>{checkOutTime ? checkOutTime : '00:00'}</Text>
+            <Text style={styles.punchText}>
+              {attendanceData?.checkOutTime
+                ? attendanceData?.checkOutTime
+                : '00:00'}
+            </Text>
             <Text style={styles.punchLabel}>Punch Out</Text>
           </View>
           <View style={styles.punchItem}>
@@ -195,6 +191,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f7f7f7',
+  },
+  location:{
+    flexDirection: 'column',
+    gap: 10,
   },
   header: {
     flexDirection: 'row',

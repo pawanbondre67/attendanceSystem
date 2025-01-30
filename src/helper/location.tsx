@@ -71,7 +71,7 @@ const useLocation = () => {
       error => {
         setIsFetchingLocation(false);
         setLocationStatus(error.message);
-        console.error('one time',error.message);
+        console.warn('one time',error.message);
         if (error.code === 2) {
           // GPS is off, prompt user to turn it on
           Alert.alert(
@@ -83,8 +83,8 @@ const useLocation = () => {
         }
       },
       {
-        enableHighAccuracy: false,
-        timeout: 20000,
+        enableHighAccuracy: true,
+        timeout: 40000,
         maximumAge: 1000,
       },
     );
@@ -162,6 +162,7 @@ const useLocation = () => {
     currentLongitude,
     locationStatus,
     isFetchingLocation,
+    getOneTimeLocation,
   };
 };
 

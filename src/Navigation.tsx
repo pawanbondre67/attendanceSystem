@@ -6,14 +6,19 @@ import LoginScreen from './screens/Auth/LoginScreen';
 import CameraAuth from './screens/cameraAuth/CameraAuth';
 import {RootStackParamList} from './types/types';
 import CheckInOut from './screens/CheckInOut';
-
-
+import Demo from './screens/demo/Demo';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const RootStack = () => {
   return (
     <Stack.Navigator initialRouteName="splash">
-      <Stack.Screen name="splash" component={SplashScreen} />
+      <Stack.Screen
+        name="splash"
+        options={{
+          headerShown: false,
+        }}
+        component={SplashScreen}
+      />
       <Stack.Screen
         name="home"
         options={{
@@ -47,9 +52,16 @@ const RootStack = () => {
       <Stack.Screen
         name="checkinout"
         options={{
-        title: 'Attendance',
+          title: 'Attendance',
         }}
         component={CheckInOut}
+      />
+       <Stack.Screen
+        name="demo"
+        options={{
+          title: 'demo screen',
+        }}
+        component={Demo}
       />
     </Stack.Navigator>
   );

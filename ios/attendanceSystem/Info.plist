@@ -29,6 +29,17 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+
+	<key>NSExceptionDomains</key>
+    <dict>
+        <key>115.124.123.180</key>
+        <dict>
+            <key>NSExceptionAllowsInsecureHTTPLoads</key>
+            <true/>
+        </dict>
+    </dict>
+
+
 	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>

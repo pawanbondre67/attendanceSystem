@@ -16,6 +16,7 @@ import {
   setEmployeeId,
   setEmployeeDetails,
 } from '../../redux/slices/Employee/index';
+import LottieView from 'lottie-react-native';
 
 interface EmployeeDetails {
   CustomerCode: string;
@@ -92,6 +93,7 @@ const SplashScreen = () => {
       !isLatestStatusLoading &&
       latestStatusData?.data?.status !== attendanceData.status // ✅ Avoid redundant updates
     ) {
+      console.log('attendanceData after fetching', latestStatusData);
       dispatch(
         setAttendanceData({
           ...attendanceData,
@@ -108,7 +110,7 @@ const SplashScreen = () => {
 
     const currentRoute = navigation.getState().routes?.[0]?.name;
 
-    if (employeeDetails && currentRoute !== 'home') {
+    if (employeeDetails && currentRoute !== 'home' ) {
       console.log('Navigating to home');
       navigation.dispatch(
         CommonActions.reset({
@@ -116,7 +118,7 @@ const SplashScreen = () => {
           routes: [{name: 'home'}],
         }),
       );
-    } else if (!employeeDetails && currentRoute !== 'register') {
+    } else if (!employeeDetails && currentRoute !== 'register' ) {
       console.log('Navigating to login');
       navigation.dispatch(
         CommonActions.reset({
@@ -125,7 +127,7 @@ const SplashScreen = () => {
         }),
       );
     }
-  }, [isInitialized, employeeDetails, isLatestStatusLoading, navigation]);
+  }, [isInitialized, employeeDetails, isLatestStatusLoading, navigation , latestStatusData]);
 
   useEffect(() => {
     console.log('loginResult', loginResult);
@@ -143,7 +145,12 @@ const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Loading...</Text>
+       <LottieView
+          source={require('../../assets/timeLoader.json')} // Path to Lottie file
+          autoPlay
+          loop
+          style={styles.lottie}
+        />
     </View>
   );
 };
@@ -153,6 +160,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  lottie: {
+    width:300,
+    height: 300,
   },
 });
 

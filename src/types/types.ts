@@ -6,10 +6,22 @@ export interface User {
   password?: string;
 }
 
-export interface RootStackParamList {
+export type RootStackParamList = {
   splash: undefined;
-  home: undefined;
+  home: {
+    screen: keyof RootTabParamList;
+  };
   camera: undefined;
   register: undefined;
   [key: string]: undefined | object;
-}
+};
+
+export type RootTabParamList = {
+  home: undefined;
+  demo: undefined;
+};
+
+export type AttendanceStackParamList = {
+  homeMain: undefined;
+  checkinout: undefined;
+};

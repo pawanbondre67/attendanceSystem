@@ -17,6 +17,8 @@ import {
   setEmployeeDetails,
 } from '../../redux/slices/Employee/index';
 import LottieView from 'lottie-react-native';
+import useLocation from '../../helper/location';
+import { ActivityIndicator } from 'react-native-paper';
 
 interface EmployeeDetails {
   CustomerCode: string;
@@ -28,6 +30,7 @@ const SplashScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isInitialized, setIsInitialized] = useState(false);
   const dispatch = useAppDispatch();
+  const {getOneTimeLocation , isFetchingLocation} = useLocation();
   const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
   );
@@ -81,6 +84,7 @@ const SplashScreen = () => {
       if (details) {
         await checkUserLoggedIn(details);
       }
+      await getOneTimeLocation();
       setIsInitialized(true);
     };
 
@@ -135,12 +139,14 @@ const SplashScreen = () => {
     console.log('isInitialized', isInitialized);
     console.log('isLatestStatusLoading', isLatestStatusLoading);
     console.log('attendanceData', latestStatusData);
+    console.log('isFetchingLocation', isFetchingLocation);
   }, [
     loginResult,
     employeeDetails,
     isInitialized,
     isLatestStatusLoading,
     latestStatusData,
+    isFetchingLocation,
   ]);
 
   return (
@@ -151,6 +157,12 @@ const SplashScreen = () => {
           loop
           style={styles.lottie}
         />
+        {isFetchingLocation ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Text>Initializing...</Text>
+      )}
+
     </View>
   );
 };

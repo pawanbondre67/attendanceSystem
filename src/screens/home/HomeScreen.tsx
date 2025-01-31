@@ -10,7 +10,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {RootStackParamList} from '../../types/types';
@@ -21,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clock from '../../components/Clock';
 import useLocation from '../../helper/location';
 import useLocalStorage from './useLocalStorage';
-import { Button } from 'react-native';
+import {Button} from 'react-native';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -29,15 +28,15 @@ const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
 
-  const {isFetchingLocation, currentLatitude, currentLongitude , getOneTimeLocation} = useLocation();
-console.log('currentLatitude at home screen', currentLatitude);
+  const {currentLatitude, currentLongitude, getOneTimeLocation} = useLocation();
+  console.log('currentLatitude at home screen', currentLatitude);
   // const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
   const {employeeId} = useAppSelector(state => state.employee);
   // console.log('status returing from globsl state', status);
 
   const {employeeDetails, attendanceData} = useLocalStorage();
   console.log('employeeDetails', employeeDetails);
-  console.log('attendanceData', attendanceData);
+  console.log('attendanceData from local storage', attendanceData);
 
   // Function to delete employeeId from local storage
   const deleteEmployeeId = async () => {
@@ -89,19 +88,12 @@ console.log('currentLatitude at home screen', currentLatitude);
         </View> */}
         <Clock />
 
-        {isFetchingLocation ? (
-          <View>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text style={styles.loaderText}>Fetching location...</Text>
-          </View>
-        ) : (
-          <View style={styles.location}>
-            <Text>Latitude: {currentLatitude}</Text>
-            <Text>Longitude: {currentLongitude}</Text>
+        <View style={styles.location}>
+          <Text>Latitude: {currentLatitude}</Text>
+          <Text>Longitude: {currentLongitude}</Text>
 
-            <Button title="Refresh Location" onPress={getOneTimeLocation} />
-          </View>
-        )}
+          <Button title="Refresh Location" onPress={getOneTimeLocation} />
+        </View>
 
         {/* Punch In Button */}
         <View style={styles.container}>
@@ -162,21 +154,6 @@ console.log('currentLatitude at home screen', currentLatitude);
         </View>
       </View>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="home" size={24} color="#fff" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="apps" size={24} color="#fff" />
-          <Text style={styles.navText}>Apps</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="menu" size={24} color="#fff" />
-          <Text style={styles.navText}>Menu</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };
@@ -192,7 +169,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#f7f7f7',
   },
-  location:{
+  location: {
     flexDirection: 'column',
     gap: 10,
   },

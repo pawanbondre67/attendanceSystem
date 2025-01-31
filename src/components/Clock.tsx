@@ -17,12 +17,11 @@ const Clock = () => {
     const fetchTime = async () => {
       try {
         const response = await axios.get('https://timeapi.io/api/time/current/zone?timeZone=Asia%2FCalcutta');
-        console.log('Time:', response.data);
         const { time  } = response.data;
         // setCurrentDate(date);
         setCurrentTime(time);
       } catch (error) {
-        console.error('Error fetching time:', error);
+        console.log('Error fetching time:', error);
       }
     };
 
@@ -42,10 +41,6 @@ const Clock = () => {
   // const getCurrentTimeIn12HourFormat = (): string => {
   //   return moment().format('hh:mm A');
   // };
-
-
-
-  console.log('Current Time:', currentDate);
 
   return <View style={styles.timeSection}>
   <Text style={styles.time}>{currentTime}</Text>

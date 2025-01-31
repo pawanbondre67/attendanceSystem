@@ -90,9 +90,12 @@ const CheckInOut = (props: Props) => {
       }
     }
   };
-
-  if (device == null || !isCameraReady) {
-    return null;
+if (device == null || !isCameraReady) {
+    return (
+      <View style={styles.container}>
+        <Text>Camera not available</Text>
+      </View>
+    );
   }
 
   const handleRotation = async (image: PhotoFile) => {
@@ -210,12 +213,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     padding: 20,
     flexDirection: 'column',
-
     alignItems: 'center',
     gap: 20,
   },
   imageContainer: {
-    marginTop: '30%',
+    marginTop: '10%',
     paddingVertical: '20%',
     width: '100%',
     backgroundColor: 'lightblue',

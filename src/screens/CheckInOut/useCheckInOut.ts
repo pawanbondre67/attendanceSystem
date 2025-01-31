@@ -20,7 +20,7 @@ import {
 import {isIos} from '../../helper/utility';
 import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
 import useLocalStorage from '..//home/useLocalStorage';
-import { setSnackMessage } from '../../redux/slices/snackbarSlice';
+import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 
 // Define types for state and function parameters
 interface CheckInOutData {
@@ -102,13 +102,13 @@ const useCheckInOut = () => {
   ]);
 
   // console.log('checkout result data', checkOutResult);
-  // console.log('after marking attendance resp data', markAttendanceResult);
+  console.log('after marking attendance resp data', markAttendanceResult);
   // console.log('currentLong', currentLongitude);
   // console.log('currentLat inside hook', currentLatitude);
   console.log('checkInOutData chi image', checkInOutData);
 
   const {currentTime, currentDate, currentTime12} = formatDate();
-  const {employeeId} = useAppSelector(state => state.employee);
+  const {employeeId, employeeDetails} = useAppSelector(state => state.employee);
 
   const generateCheckinOutPayload = async () => {
     try {
@@ -138,6 +138,7 @@ const useCheckInOut = () => {
         mip: deviceIp,
         mid: deviceName,
         employeeMaster_Fid: employeeId,
+        CustomerCode: employeeDetails?.CustomerCode,
       };
       if (status === 'checkin') {
         payload.inDate = currentDate;
@@ -179,7 +180,11 @@ const useCheckInOut = () => {
 
       return payload;
     } catch (err) {
-      dispatch(setSnackMessage('Error generating payload , please refresh location again'));
+      dispatch(
+        setSnackMessage(
+          'Error generating payload , please refresh location again',
+        ),
+      );
       throw err;
     }
   };
@@ -206,11 +211,11 @@ const useCheckInOut = () => {
     }
 
     if (markAttendanceResult?.isError && markAttendanceResult?.error) {
-      dispatch(setSnackMessage( markAttendanceResult.error.data.message,));
-      // console.error(
-      //   'Error marking attendance:',
-      //   markAttendanceResult.error.data.message,
-      // );
+      // dispatch(setSnackMessage( markAttendanceResult.error.message,));
+      console.error(
+        'Error marking attendance:',
+        markAttendanceResult.error.message,
+      );
     }
     if (checkOutResult?.isSuccess && checkOutResult?.data?.message) {
       const updatedAttendanceData = {
@@ -230,8 +235,8 @@ const useCheckInOut = () => {
       dispatch(setSnackMessage(checkOutResult.data.message));
     }
     if (checkOutResult?.isError && checkOutResult?.error?.message) {
-      dispatch(setSnackMessage(checkOutResult.error.message));
-      // console.error('Error checking out:', checkOutResult.error.message);
+      // dispatch(setSnackMessage(checkOutResult.error.message));
+      console.error('Error checking out:', checkOutResult.error.message);
     }
   }, [markAttendanceResult, checkOutResult]);
 
@@ -339,7 +344,6 @@ const useCheckInOut = () => {
           if (status === 'checkin') {
             markAttendance(payload);
             dispatch(setSnackMessage('Attendance marked successfully'));
-
           } else if (status === 'checkout') {
             checkOut(payload);
             dispatch(setSnackMessage('Attendance marked successfully'));

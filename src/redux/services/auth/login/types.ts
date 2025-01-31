@@ -3,7 +3,7 @@ interface LoginResponse {
   status: number | string;
   data: {
     employeeId: string | number;
-    isAppRegistermandatory: boolean;
+    isAppRegisterMandatory: boolean;
   };
 }
 

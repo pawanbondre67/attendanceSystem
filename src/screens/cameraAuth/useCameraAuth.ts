@@ -147,7 +147,7 @@ const useCameraAuth = () => {
 
   const navigation = useNavigation();
   // const dispatch = useAppDispatch();
-  const employeeId = useAppSelector(state => state.employee.employeeId);
+  const {employeeId, employeeDetails} = useAppSelector(state => state.employee);
   const [register, {isLoading, error}] = useRegisterMutation();
 
   // // console.log('registerResult in camera registration', registerResult);
@@ -157,6 +157,7 @@ const useCameraAuth = () => {
       const deviceName = await DeviceInfo.getDeviceName();
       const deviceIp = await DeviceInfo.getIpAddress();
       const imei = await DeviceInfo.getBuildId();
+      
 
       // Verify file access
       for (const key in images) {
@@ -171,6 +172,7 @@ const useCameraAuth = () => {
         mip: deviceIp,
         EmployeeMaster_Fid: employeeId,
         IMEINumber: imei,
+        CustomerCode: employeeDetails?.CustomerCode,
         AppImage_I: {
           uri: `file://${images.straight}`,
           name: 'straight.jpg',

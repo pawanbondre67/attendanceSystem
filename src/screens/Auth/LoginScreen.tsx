@@ -19,7 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 // import {useAuth} from '../../context/AuthProvider';
 import useLogin from './useLogin';
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }: { navigation: any }) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const [password, setPassword] = useState('1234567');
   const [width] = useState(new Animated.Value(50)); // Initial width
@@ -147,7 +147,7 @@ const LoginScreen = () => {
         </TouchableWithoutFeedback>
         <View style={styles.buttonContainer}>
           <Pressable
-            onPress={handleLogin}
+            onPress={() => handleLogin(navigation)}
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             style={styles.button}>

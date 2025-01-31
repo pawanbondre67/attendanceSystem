@@ -13,6 +13,7 @@ export interface CheckOutPayload {
     type: string;
   };
   status: string;
+  CustomerCode : string;
   [key: string]: any; // Index signature allowing arbitrary string keys
 }
 
@@ -31,6 +32,7 @@ export interface CheckInPayload {
     type: string;
   };
   status: string;
+  CustomerCode : string;
   [key: string]: any; // Index signature allowing arbitrary string keys
 }
 
@@ -39,6 +41,7 @@ export interface registerPayload {
   mip: string;
   EmployeeMaster_Fid: string;
   IMEINumber: string;
+  CustomerCode : string;
   AppImage_I: {
     uri: string;
     name: string;

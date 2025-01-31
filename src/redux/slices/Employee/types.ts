@@ -1,4 +1,8 @@
 export interface employeeState {
   employeeId: string | undefined;
-  employeeDetails: any;
+  employeeDetails: {
+    CustomerCode: string;
+    UserName: string;
+    Password: string;
+  } | undefined;
 }

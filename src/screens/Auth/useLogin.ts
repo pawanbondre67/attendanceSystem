@@ -6,14 +6,15 @@ import {
   // useLoginQuery,
 } from '../../redux/services/auth/login/LoginApiSlice';
 // import {API_TOKEN, APP_DATA_ENCRYPTION_KEY} from '@env';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../types/types';
+// import {NavigationProp, useNavigation} from '@react-navigation/native';
+// import {RootStackParamList} from '../../types/types';
 import {useAppDispatch} from '../../redux/hook/hook';
 import {
   setEmployeeDetails,
   setEmployeeId,
 } from '../../redux/slices/Employee/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 
 export interface Errors {
   CustomerCode: string;
@@ -24,11 +25,11 @@ export interface Errors {
 export interface CustomerData extends Errors {}
 
 const useLogin = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [customerData, setCustomerData] = useState<CustomerData>({
-    CustomerCode: 'OTD1000',
-    UserName: 'Shivani',
-    Password: '1',
+    CustomerCode: '',
+    UserName: '',
+    Password: '',
   });
   const [errors, setErrors] = useState<Errors>({
     CustomerCode: '',
@@ -62,20 +63,16 @@ const useLogin = () => {
       console.error('Failed to save employee details to local storage', error);
     }
   };
-
-  const handleLogin = async () => {
-    // console.log('customerData', customerData);
+  const handleLogin = async navigation => {
     const validationErrors = checkValidation(customerData);
     if (validationErrors) {
       setErrors(validationErrors);
     } else {
       try {
         let response;
-        // console.log('customerData while sending request', customerData);
         try {
           response = await loginUser(customerData, false).unwrap();
-          // await registerFCMServices();
-          console.log('response', response);
+          console.log('API Response:', response);
         } catch (err) {
           let errormessage;
           if ((err as any)?.data?.message) {
@@ -83,28 +80,31 @@ const useLogin = () => {
           } else if ((err as any)?.error) {
             errormessage = (err as any).error;
           } else if ((err as any)?.status === 500) {
-            errormessage = 'server returned with status code 500';
+            errormessage = 'Server returned with status code 500';
           }
-          //   dispatch(setSnackMessage(errormessage));
-          console.error('errormessage', errormessage);
+          dispatch(setSnackMessage(errormessage));
+          console.error('Login Error:', errormessage);
         }
+
         if (response?.data) {
-          //   await saveLoginCredintials(customerData);
           dispatch(setEmployeeId(response?.data?.employeeId.toString()));
           dispatch(setEmployeeDetails(customerData));
           await saveEmployeeDetailsToLocal(customerData);
+         
+          // Use the response object directly
+          console.log(
+            'isAppRegistermandatory from response:',
+            response.data.isAppRegisterMandatory,
+          );
 
           navigation.navigate(
-            // response?.data?.isAppRegistermandatory ? 'camera' : 'home',
-            'camera',
-
+            response.data.isAppRegisterMandatory ? 'camera' : 'home',
           );
+           
         }
       } catch (error: any) {
-        if (error) {
-          console.log('error', error);
-          //   dispatch(setSnackMessage('error while login'));
-        }
+        console.error('Login Failed:', error);
+        dispatch(setSnackMessage('Error while logging in'));
       }
     }
   };

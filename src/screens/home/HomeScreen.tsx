@@ -73,7 +73,7 @@ const HomeScreen = () => {
           </View>
         </View>
         <Icon
-          name="refresh"
+          name="logout"
           onPress={deleteEmployeeId}
           size={24}
           color="#000"

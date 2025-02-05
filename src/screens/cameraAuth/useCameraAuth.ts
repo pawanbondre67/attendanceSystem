@@ -121,7 +121,9 @@ import {useNavigation, CommonActions} from '@react-navigation/native';
 import DeviceInfo from 'react-native-device-info';
 import NetInfo from '@react-native-community/netinfo';
 import {useRegisterMutation} from '../../redux/services/attendance/attendanceApiSlice';
-import {useAppSelector} from '../../redux/hook/hook';
+import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
+// import { AppStackParamList } from '../../types/types';
+import { setSnackMessage } from '../../redux/slices/snackbarSlice';
 // import { setCheckInOutData as setAttendanceData } from '../../redux/slices/Attendance';
 // import { setEmployeeId } from '../../redux/slices/Employee';
 
@@ -146,9 +148,10 @@ const useCameraAuth = () => {
   });
 
   const navigation = useNavigation();
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const {employeeId, employeeDetails} = useAppSelector(state => state.employee);
   const [register, {isLoading, error}] = useRegisterMutation();
+
 
   // // console.log('registerResult in camera registration', registerResult);
 
@@ -260,13 +263,9 @@ const useCameraAuth = () => {
               const response = await register(payload).unwrap();
               console.log('API Response:', response);
               !isLoading && !error
-                ? navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [{name: 'home'}],
-                    }),
-                  )
+                ? navigation.replace('mainTabNavigator', { screen: 'homeTab' })
                 : null;
+              dispatch(setSnackMessage('Attendance marked successfully'));
             } catch (apiError) {
               console.error('API Error:', apiError);
               if ((apiError as Error).message === 'Network request failed') {
@@ -276,6 +275,7 @@ const useCameraAuth = () => {
               }
             }
           } else {
+            dispatch(setSnackMessage(error));
             console.log('register Payload  &&  error', payload, error);
           }
         });
@@ -285,7 +285,7 @@ const useCameraAuth = () => {
     }
   };
 
-  return {onsubmit, images, setImages};
+  return {onsubmit, images, setImages , isLoading};
 };
 
 export default useCameraAuth;

@@ -40,9 +40,13 @@ interface RouteParams {
 }
 type CheckInOutRouteProp = RouteProp<{params: RouteParams}, 'params'>;
 
-const useCheckInOut = () => {
+const useCheckInOut = ({currentLatitude,currentLongitude} : {
+  currentLatitude: number | null;
+  currentLongitude: number | null;
+}) => {
   const dispatch = useAppDispatch();
-  const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
+  console.log('currentLong', currentLongitude);
+  console.log('currentLat', currentLatitude);
   const {storeAttendanceData} = useLocalStorage();
 
   const {CheckInOutData: attendanceData} = useAppSelector(
@@ -51,13 +55,13 @@ const useCheckInOut = () => {
 
   console.log('CheckInOutData from local storage', attendanceData);
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
-  const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
+  // const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
   // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
 
   const [checkOut, checkOutResult] = useCheckOutMutation();
   const route = useRoute<CheckInOutRouteProp>();
   const btnLabel = route.params?.type;
-  console.log('btnLabel', btnLabel);
+  // console.log('btnLabel', btnLabel);
   const navigation = useNavigation();
 
   const [checkInOutData, setCheckinOutData] = useState<CheckInOutData>({
@@ -143,12 +147,12 @@ const useCheckInOut = () => {
       if (status === 'checkin') {
         payload.inDate = currentDate;
         payload.inTime = currentTime;
-        payload.inLat = checkInOutData?.latitude
-          ? checkInOutData.latitude
-          : currentLatitude;
-        payload.inLong = checkInOutData?.longitude
-          ? checkInOutData.longitude
-          : currentLongitude;
+        payload.inLat = currentLatitude
+          ? currentLatitude
+          : checkInOutData.latitude;
+        payload.inLong = currentLongitude
+          ? currentLongitude
+          : checkInOutData.longitude;
 
         payload.inImage = checkInOutData?.image
           ? {
@@ -161,12 +165,12 @@ const useCheckInOut = () => {
       } else if (status === 'checkout') {
         payload.outDate = currentDate;
         payload.outTime = currentTime;
-        payload.outLat = checkInOutData.latitude
-          ? checkInOutData.latitude
-          : currentLatitude;
-        payload.outLong = checkInOutData.longitude
-          ? checkInOutData.longitude
-          : currentLongitude;
+        payload.outLat =  currentLatitude
+        ? currentLatitude
+        : checkInOutData.latitude;
+        payload.outLong = currentLongitude
+          ? currentLongitude
+          : checkInOutData.longitude;
 
         payload.outImage = checkInOutData?.image
           ? {
@@ -205,7 +209,7 @@ const useCheckInOut = () => {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'home'}],
+          routes: [{name: 'homeTab'}],
         }),
       );
     }
@@ -229,7 +233,7 @@ const useCheckInOut = () => {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'home'}],
+          routes: [{name: 'homeTab'}],
         }),
       );
       dispatch(setSnackMessage(checkOutResult.data.message));
@@ -373,7 +377,6 @@ const useCheckInOut = () => {
     errorState,
     pickImage,
     btnLabel,
-    isFetchingLocation,
     markAttendanceResult,
     proceedMarkAttendance,
     onPhotoCapture,

@@ -10,7 +10,7 @@ import {
   AppStackParamList,
   MainTabParamList,
 } from './types/types';
-// import CheckInOut from './screens/CheckInOut';
+import CheckInOut from './screens/CheckInOut';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AttendanceLog from './screens/AttendanceLog';
 
@@ -75,11 +75,11 @@ const AttendanceStackNavigator = () => {
         options={{headerShown: false}}
         component={HomeScreen}
       />
-      {/* <AttendanceStack.Screen
-        name="checkinoutScreen"
+      <AttendanceStack.Screen
+        name="checkinout"
         options={{title: 'Attendance'}}
         component={CheckInOut}
-      /> */}
+      />
     </AttendanceStack.Navigator>
   );
 };

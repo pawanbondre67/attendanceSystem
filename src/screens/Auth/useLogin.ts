@@ -27,9 +27,9 @@ export interface CustomerData extends Errors {}
 const useLogin = () => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [customerData, setCustomerData] = useState<CustomerData>({
-    CustomerCode: '',
-    UserName: '',
-    Password: '',
+    CustomerCode: 'OTD1000',
+    UserName: 'Shivani',
+    Password: '1',
   });
   const [errors, setErrors] = useState<Errors>({
     CustomerCode: '',
@@ -100,7 +100,7 @@ const useLogin = () => {
           navigation.navigate(
             response.data.isAppRegisterMandatory
               ? 'cameraAuthScreen'
-              : 'mainTabNavigator',
+              : 'cameraAuthScreen',
           );
         }
       } catch (error: any) {

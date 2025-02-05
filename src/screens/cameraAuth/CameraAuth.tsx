@@ -15,7 +15,7 @@ import {Alert} from 'react-native';
 import {Platform} from 'react-native';
 import useCameraAuth from './useCameraAuth';
 const CameraAuth = () => {
-  const {onsubmit, images, setImages} = useCameraAuth();
+  const {onsubmit, images, setImages ,isLoading} = useCameraAuth();
   const {height, width} = Dimensions.get('window');
 
   const device = useCameraDevice('front');
@@ -164,7 +164,7 @@ const CameraAuth = () => {
       </View>
 
       {step === 4 && verificationProgress === 100 ? (
-        <AnimatedArrowButton submit={onsubmit} routeName="home" />
+        <AnimatedArrowButton submit={onsubmit} isloading={isLoading} routeName="home" />
       ) : (
         <View style={styles.buttonContainer}>
           <TouchableOpacity

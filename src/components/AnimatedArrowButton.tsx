@@ -7,17 +7,19 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../types/types';
+import {AppStackParamList} from '../types/types';
+import { ActivityIndicator } from 'react-native-paper';
 
 interface AnimatedArrowButtonProps {
   routeName: string;
-  submit: () => void; 
+  submit: () => void;
+  isloading?: boolean;
 
 }
 const AnimatedArrowButton: React.FC<AnimatedArrowButtonProps> = ({
-  routeName,  submit,
+  routeName,  submit, isloading,
 }) => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NavigationProp<AppStackParamList>>();
   const translateX = useSharedValue(0); // Shared value to control the arrow's translation
 
   const onPressIn = () => {
@@ -43,10 +45,11 @@ const AnimatedArrowButton: React.FC<AnimatedArrowButtonProps> = ({
       }}
       onPressIn={onPressIn}
       onPressOut={onPressOut}>
-      <Text style={styles.buttonText}>Done</Text>
+     { isloading ?   <ActivityIndicator size="small" color="#fff" /> : <> <Text style={styles.buttonText}>Done</Text>
       <Animated.View style={animatedStyle}>
         <Icon name="arrow-right" size={20} color="#fff" />
       </Animated.View>
+      </>}
     </Pressable>
   );
 };

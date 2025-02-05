@@ -15,23 +15,24 @@ import {Camera, PhotoFile, useCameraDevice} from 'react-native-vision-camera';
 // import {isIos, isAndroid} from '../../helper/utility';
 import {PERMISSIONS, request} from 'react-native-permissions';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
-import { isIos } from '../../helper/utility';
+import {isIos} from '../../helper/utility';
 import useLocation from '../../helper/location';
-
 
 type Props = {};
 const CheckInOut = (props: Props) => {
+  const {
+    getOneTimeLocation,
+    currentLatitude,
+    currentLongitude,
+    isFetchingLocation,
+  } = useLocation();
   const {
     checkInOutData,
     onSubmit,
     markAttendanceResult,
 
     onPhotoCapture,
-
-  } = useCheckInOut();
-
-  const {getOneTimeLocation , currentLatitude , currentLongitude , isFetchingLocation  } = useLocation();
-
+  } = useCheckInOut({currentLatitude, currentLongitude});
   const device = useCameraDevice('front');
 
   const cameraRef = useRef<Camera>(null);
@@ -82,7 +83,7 @@ const CheckInOut = (props: Props) => {
         // setCapturedPhoto(photo.path);
         const rotatedImage = await handleRotation(photo);
         setCapturedImage(rotatedImage?.uri);
-        onPhotoCapture( isIos ? photo.path : rotatedImage?.path); // Pass captured photo data to parent component
+        onPhotoCapture(isIos ? photo.path : rotatedImage?.path); // Pass captured photo data to parent component
         setShowCamera(false);
       } catch (err) {
         console.warn('Failed to take photo', err);
@@ -90,7 +91,7 @@ const CheckInOut = (props: Props) => {
       }
     }
   };
-if (device == null || !isCameraReady) {
+  if (device == null || !isCameraReady) {
     return (
       <View style={styles.container}>
         <Text>Camera not available</Text>
@@ -144,8 +145,7 @@ if (device == null || !isCameraReady) {
     );
   };
 
-
-  console.log('currentLatitude in checkout page',currentLatitude);
+  console.log('currentLatitude in checkout page', currentLatitude);
 
   return (
     // checkInOutData.showCamera ? (
@@ -155,16 +155,13 @@ if (device == null || !isCameraReady) {
       <View style={styles.imageContainer}>
         <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
           {capturedImage ? (
-            <Image
-              source={{uri:capturedImage}}
-              style={styles.image}
-            />
+            <Image source={{uri: capturedImage}} style={styles.image} />
           ) : showCamera ? (
             <Camera
               style={styles.image}
               ref={cameraRef}
               device={device}
-             preview={true}
+              preview={true}
               isActive={true}
               // isMirrored={true}
               outputOrientation="device"
@@ -181,13 +178,11 @@ if (device == null || !isCameraReady) {
             <ActivityIndicator size="small" color="#0000ff" />
           </View>
         ) : (
-          <View >
+          <View>
             <Text>Latitude: {currentLatitude}</Text>
             <Text>Longitude: {currentLongitude}</Text>
 
-            <Button onPress={getOneTimeLocation} >
-            Refresh Location
-            </Button>
+            <Button onPress={getOneTimeLocation}>Refresh Location</Button>
           </View>
         )}
       </View>
@@ -197,6 +192,8 @@ if (device == null || !isCameraReady) {
           <Button mode="contained" onPress={takePhoto} style={styles.button}>
             Take A Photo
           </Button>
+        ) : markAttendanceResult.isLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
         ) : (
           <Button mode="contained" onPress={onSubmit} style={styles.button}>
             Mark Attendance

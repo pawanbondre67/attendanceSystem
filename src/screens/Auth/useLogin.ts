@@ -29,7 +29,7 @@ const useLogin = () => {
   const [customerData, setCustomerData] = useState<CustomerData>({
     CustomerCode: 'OTD1000',
     UserName: 'Shivani',
-    Password: '123456',
+    Password: '1',
   });
   const [errors, setErrors] = useState<Errors>({
     CustomerCode: '',

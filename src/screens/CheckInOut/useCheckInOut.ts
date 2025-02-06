@@ -45,8 +45,9 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
   currentLongitude: number | null;
 }) => {
   const dispatch = useAppDispatch();
-  console.log('currentLong', currentLongitude);
+
   console.log('currentLat', currentLatitude);
+  console.log('currentLong', currentLongitude);
   const {storeAttendanceData} = useLocalStorage();
 
   const {CheckInOutData: attendanceData} = useAppSelector(

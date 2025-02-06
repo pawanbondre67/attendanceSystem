@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Alert, PermissionsAndroid, Platform} from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import {isIos} from '../helper/utility';
 import {useNavigation} from '@react-navigation/native';
 
@@ -9,7 +9,7 @@ const useLocation = () => {
   const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
   const [locationStatus, setLocationStatus] = useState('');
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  let watchID: number = 0;
+  // let watchID: number = 0;
   const navigation = useNavigation();
   useEffect(() => {
     // Function to request location permission
@@ -17,7 +17,7 @@ const useLocation = () => {
       if (Platform.OS === 'ios') {
         // For iOS, get location and subscribe to location updates
         getOneTimeLocation();
-        subscribeLocationLocation();
+        // subscribeLocationLocation();
       } else {
         try {
           // For Android, request location permission
@@ -48,10 +48,10 @@ const useLocation = () => {
     // Call the function to request location permission
     requestLocationPermission();
 
-    // Cleanup function to clear the location watch when the component unmounts
-    return () => {
-      Geolocation.clearWatch(watchID);
-    };
+    // // Cleanup function to clear the location watch when the component unmounts
+    // return () => {
+    //   Geolocation.clearWatch(watchID);
+    // };
   }, []); // Empty dependency array ensures this runs only once when the component mounts
 
 
@@ -90,28 +90,28 @@ const useLocation = () => {
     );
   };
 
-  const subscribeLocationLocation = () => {
-    setIsFetchingLocation(true);
-    watchID = Geolocation.watchPosition(
-      position => {
-        setIsFetchingLocation(false);
-        setLocationStatus('Location Fetched successfully');
-        console.warn('Location Fetched successfully');
-        setCurrentLongitude(position.coords.longitude);
-        setCurrentLatitude(position.coords.latitude);
-      },
-      error => {
-        setIsFetchingLocation(false);
-        console.error(error.message);
-        setLocationStatus(error.message);
-      },
-      {
-        enableHighAccuracy: false,
-        distanceFilter: 10, // fetch location updates if device has moved at least 10 meters
-        maximumAge: 1000,
-      },
-    );
-  };
+  // const subscribeLocationLocation = () => {
+  //   setIsFetchingLocation(true);
+  //   watchID = Geolocation.watchPosition(
+  //     position => {
+  //       setIsFetchingLocation(false);
+  //       setLocationStatus('Location Fetched successfully');
+  //       console.warn('Location Fetched successfully');
+  //       setCurrentLongitude(position.coords.longitude);
+  //       setCurrentLatitude(position.coords.latitude);
+  //     },
+  //     error => {
+  //       setIsFetchingLocation(false);
+  //       console.error(error.message);
+  //       setLocationStatus(error.message);
+  //     },
+  //     {
+  //       enableHighAccuracy: false,
+  //       distanceFilter: 10, // fetch location updates if device has moved at least 10 meters
+  //       maximumAge: 1000,
+  //     },
+  //   );
+  // };
 
   const openLocationSettings = () => {
     if (isIos) {

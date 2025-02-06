@@ -30,7 +30,8 @@ const SplashScreen = ({navigation} : any) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isInitialized, setIsInitialized] = useState(false);
   const dispatch = useAppDispatch();
-  const {getOneTimeLocation, isFetchingLocation} = useLocation();
+  const isHomeScreen = true;
+  const {getOneTimeLocation, isFetchingLocation} = useLocation({isHomeScreen});
   const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
   );

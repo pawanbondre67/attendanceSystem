@@ -4,7 +4,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {isIos} from '../helper/utility';
 import {useNavigation} from '@react-navigation/native';
 
-const useLocation = () => {
+const useLocation = ({isHomeScreen}: {isHomeScreen: boolean}) => {
   const [currentLongitude, setCurrentLongitude] = useState<number | null>(null);
   const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
   const [locationStatus, setLocationStatus] = useState('');
@@ -52,7 +52,7 @@ const useLocation = () => {
     // return () => {
     //   Geolocation.clearWatch(watchID);
     // };
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
+  }, [isHomeScreen]); // Empty dependency array ensures this runs only once when the component mounts
 
 
 

@@ -21,6 +21,7 @@ export type MainTabParamList = {
     screen: keyof AttendanceStackParamList;
   };
   attendanceHistoryTab: undefined;
+  profileTab : undefined;
 };
 
 export type AttendanceStackParamList = {

@@ -1,6 +1,7 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import SplashScreen from './screens/splash/SplashScreen';
 import HomeScreen from './screens/home/HomeScreen';
 import LoginScreen from './screens/Auth/LoginScreen';
@@ -13,6 +14,7 @@ import {
 import CheckInOut from './screens/CheckInOut';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AttendanceLog from './screens/AttendanceLog';
+import ProfileScreen from './screens/profile/ProfileScreen';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 const AttendanceStack = createNativeStackNavigator<AttendanceStackParamList>();
@@ -22,46 +24,74 @@ const MainTabNavigator = () => {
   return (
     <MainTab.Navigator
       initialRouteName="homeTab"
-      screenOptions={({route}) => ({
-        // eslint-disable-next-line react/no-unstable-nested-components
-        tabBarIcon: ({color, size}) => {
-          let iconName;
+      screenOptions={({route}) => {
+        // Get the currently focused route name
+        const routeName = getFocusedRouteNameFromRoute(route) ?? 'homeScreen';
 
-          if (route.name === 'homeTab') {
-            iconName = 'home';
-          } else if (route.name === 'attendanceHistoryTab') {
-            iconName = 'menu';
-          }
+        // Hide the tab bar if the focused route is 'checkinout'
+        const isCheckInOutScreen = routeName === 'checkinout';
 
-          return <Icon name={iconName ?? ''} color={color} size={size} />;
-        },
-        tabBarActiveTintColor: '#bcc4ff',
-        tabBarInactiveTintColor: 'black',
-        tabBarStyle: {
-          backgroundColor: '#e53935',
-          borderTopWidth: 0,
-          elevation: 0,
-          height: 70,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          textAlign: 'center',
-          // textTransform : 'capitalize',
-          color: 'white',
-        },
-      })}>
+        return {
+          // eslint-disable-next-line react/no-unstable-nested-components
+          tabBarIcon: ({color, size}) => {
+            let iconName;
+
+            if (route.name === 'homeTab') {
+              iconName = 'home';
+            } else if (route.name === 'attendanceHistoryTab') {
+              iconName = 'menu';
+            } else if (route.name === 'profileTab') {
+              iconName = 'person';
+            }
+
+            return <Icon name={iconName ?? ''} color={color} size={size} />;
+          },
+          tabBarActiveTintColor: '#bcc4ff',
+          tabBarInactiveTintColor: 'black',
+          tabBarStyle: {
+            backgroundColor: '#578FCA',
+            borderTopWidth: 0,
+            elevation: 0,
+            height: 70,
+            display: isCheckInOutScreen ? 'none' : 'flex', // Hide tab bar for CheckInOut screen
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            textAlign: 'center',
+            color: 'white',
+          },
+        };
+      }}>
       <MainTab.Screen
         name="homeTab"
-        options={{headerShown: false}}
+        options={{
+          headerShown: false,
+          animation : 'shift',
+          tabBarLabel: 'Home',
+
+
+        }
+      }
         component={AttendanceStackNavigator}
       />
 
       <MainTab.Screen
         name="attendanceHistoryTab"
         options={{
-          title: 'Attendance History',
+         headerShown: false,
+          animation :'shift',
         }}
         component={AttendanceLog}
+      />
+      <MainTab.Screen
+        name="profileTab"
+        options={{headerShown: false,
+          title: 'Profile',
+          animation :'shift',
+          tabBarLabel: 'Profile',
+        }}
+        component={ProfileScreen}
+
       />
     </MainTab.Navigator>
   );

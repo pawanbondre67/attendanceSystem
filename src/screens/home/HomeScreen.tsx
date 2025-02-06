@@ -1,14 +1,6 @@
-import {
-  CommonActions,
-} from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAppSelector} from '../../redux/hook/hook';
@@ -18,15 +10,22 @@ import Clock from '../../components/Clock';
 import useLocation from '../../helper/location';
 import useLocalStorage from './useLocalStorage';
 import {Button} from 'react-native';
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const HomeScreen = ({navigation}:any) => {
+const HomeScreen = ({navigation}: any) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
 
-  const {currentLatitude, currentLongitude, getOneTimeLocation , isFetchingLocation} = useLocation();
+  const isHomeScreen = true;
+
+  const {
+    currentLatitude,
+    currentLongitude,
+    getOneTimeLocation,
+    isFetchingLocation,
+  } = useLocation({isHomeScreen});
   console.log('currentLatitude at home screen', currentLatitude);
   // const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
   const {employeeId} = useAppSelector(state => state.employee);
@@ -45,8 +44,7 @@ const HomeScreen = ({navigation}:any) => {
       },
       {text: 'OK', onPress: deleteEmployeeId},
     ]);
-  }
-
+  };
 
   // Function to delete employeeId from local storage
   const deleteEmployeeId = async () => {
@@ -82,12 +80,7 @@ const HomeScreen = ({navigation}:any) => {
             <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
-        <Icon
-          name="logout"
-          onPress={confirmLogout}
-          size={24}
-          color="#000"
-        />
+        <Icon name="logout" onPress={confirmLogout} size={24} color="#000" />
       </View>
 
       <View style={styles.container}>
@@ -164,7 +157,6 @@ const HomeScreen = ({navigation}:any) => {
           </View>
         </View>
       </View>
-
     </SafeAreaView>
   );
 };
@@ -246,7 +238,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 140,
     height: 140,
-    borderRadius:90,
+    borderRadius: 90,
     backgroundColor: '#f7f7f7',
     shadowColor: '#000',
     shadowOffset: {width: 0, height: 2}, // Softer shadow offset

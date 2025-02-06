@@ -20,14 +20,14 @@ import useLocation from '../../helper/location';
 
 type Props = {};
 const CheckInOut = (props: Props) => {
+  const isHomeScreen = false;
   const {
     getOneTimeLocation,
     currentLatitude,
     currentLongitude,
     isFetchingLocation,
-  } = useLocation();
+  } = useLocation({isHomeScreen});
   const {
-    checkInOutData,
     onSubmit,
     markAttendanceResult,
 
@@ -155,18 +155,28 @@ const CheckInOut = (props: Props) => {
       <View style={styles.imageContainer}>
         <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
           {capturedImage ? (
-            <Image source={{uri: capturedImage}} style={styles.image} />
-          ) : showCamera ? (
-            <Camera
-              style={styles.image}
-              ref={cameraRef}
-              device={device}
-              preview={true}
-              isActive={true}
-              // isMirrored={true}
-              outputOrientation="device"
-              photo={true}
+            // <Image source={{uri: capturedImage}} style={styles.image} />
+            <Image
+              source={{uri: capturedImage}}
+              style={styles.faceOutline}
+              resizeMethod="auto"
             />
+          ) : showCamera ? (
+          <>  <Image
+          source={require('../../assets/face-outline.png')}
+          style={styles.faceOutline}
+          resizeMethod="auto"
+        />
+        <Camera
+          style={StyleSheet.absoluteFill}
+          ref={cameraRef}
+          device={device}
+          preview={true}
+          isActive={true}
+          // isMirrored={true}
+          outputOrientation="device"
+          photo={true}
+        /></>
           ) : (
             <Text style={styles.placeholderText}>Take a photo</Text>
           )}
@@ -214,7 +224,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   imageContainer: {
-    marginTop: '10%',
+    // marginTop: '10%',
     paddingVertical: '20%',
     width: '100%',
     backgroundColor: 'lightblue',
@@ -223,13 +233,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   imagebody: {
-    width: 180,
-    height: 180,
+    width: 300,
+    height: 300,
     backgroundColor: '#e0e0e0',
     borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
 
   placeholderText: {
@@ -245,6 +255,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 100,
+  },
+  faceOutline:{
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
   },
   title: {
     fontSize: 24,

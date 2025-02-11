@@ -4,7 +4,7 @@ import {employeeState} from './types';
 
 const initialState: employeeState = {
   employeeId: undefined,
-  employeeDetails: undefined,
+  employeeDetailsState: undefined,
 };
 
 export const employeeSlice = createSlice({
@@ -14,12 +14,12 @@ export const employeeSlice = createSlice({
     setEmployeeId: (state, action: PayloadAction<string | undefined>) => {
       state.employeeId = action.payload;
     },
-    setEmployeeDetails: (state, action: PayloadAction<any>) => {
-      state.employeeDetails = action.payload;
+    setEmployeeDetailsState: (state, action: PayloadAction<any>) => {
+      state.employeeDetailsState = action.payload;
     },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const {setEmployeeId, setEmployeeDetails} = employeeSlice.actions;
+export const {setEmployeeId, setEmployeeDetailsState} = employeeSlice.actions;
 export default employeeSlice.reducer;

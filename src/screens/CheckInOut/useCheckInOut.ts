@@ -1,7 +1,6 @@
 import RNFS from 'react-native-fs';
 import {useCallback, useEffect, useState} from 'react';
 import {formatDate} from '../../helper/index';
-import useLocation from '../../helper/location';
 import {
   CommonActions,
   RouteProp,
@@ -48,7 +47,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
 
   console.log('currentLat', currentLatitude);
   console.log('currentLong', currentLongitude);
-  const {storeAttendanceData} = useLocalStorage();
+  const {storeAttendanceData} = useLocalStorage({});
 
   const {CheckInOutData: attendanceData} = useAppSelector(
     state => state.attendance,
@@ -113,7 +112,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
   console.log('checkInOutData chi image', checkInOutData);
 
   const {currentTime, currentDate, currentTime12} = formatDate();
-  const {employeeId, employeeDetails} = useAppSelector(state => state.employee);
+  const {employeeId, employeeDetailsState} = useAppSelector(state => state.employee);
 
   const generateCheckinOutPayload = async () => {
     try {
@@ -143,7 +142,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
         mip: deviceIp,
         mid: deviceName,
         employeeMaster_Fid: employeeId,
-        CustomerCode: employeeDetails?.CustomerCode,
+        CustomerCode: employeeDetailsState?.CustomerCode,
       };
       if (status === 'checkin') {
         payload.inDate = currentDate;
@@ -219,7 +218,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
       // dispatch(setSnackMessage( markAttendanceResult.error.message,));
       console.error(
         'Error marking attendance:',
-        markAttendanceResult.error.message,
+        markAttendanceResult.error,
       );
     }
     if (checkOutResult?.isSuccess && checkOutResult?.data?.message) {
@@ -230,6 +229,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
       };
 
       dispatch(setAttendanceData(updatedAttendanceData));
+      dispatch(setSnackMessage(checkOutResult.data.message));
       storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
         CommonActions.reset({
@@ -326,15 +326,6 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
   };
 
   const pickImage = useCallback(async () => {
-    // try {
-    //   const result = await ImagePicker.openCamera({
-    //     width: 300,
-    //     height: 400,
-    //   });
-    //   updateCheckInOutData({image: result});
-    // } catch (err) {
-    //   console.log('err', err);
-    // }
     updateCheckInOutData({showCamera: true});
   }, []);
 

@@ -1,9 +1,4 @@
-// import {
-//   useNavigation,
-//   NavigationProp,
-//   CommonActions,
-// } from '@react-navigation/native';
-// import {RootStackParamList} from '../../types/types'; // Adjust the path as necessary
+
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -14,7 +9,7 @@ import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
 import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
 import {
   setEmployeeId,
-  setEmployeeDetails,
+  setEmployeeDetailsState,
 } from '../../redux/slices/Employee/index';
 import LottieView from 'lottie-react-native';
 import useLocation from '../../helper/location';
@@ -61,7 +56,7 @@ const SplashScreen = ({navigation} : any) => {
     try {
       const response = await loginUser(details, false).unwrap();
       dispatch(setEmployeeId(response?.data?.employeeId.toString()));
-      dispatch(setEmployeeDetails(details));
+      dispatch(setEmployeeDetailsState(details));
       console.log('User logged in using local storage data');
     } catch (error) {
       console.error('Failed to check user logged in', error);

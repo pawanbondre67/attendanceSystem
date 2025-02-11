@@ -46,8 +46,9 @@ const MainTabNavigator = () => {
 
             return <Icon name={iconName ?? ''} color={color} size={size} />;
           },
-          tabBarActiveTintColor: '#bcc4ff',
-          tabBarInactiveTintColor: 'black',
+          tabBarActiveTintColor: '#F8FAFC',
+          tabBarInactiveTintColor: '#D8D2C2',
+
           tabBarStyle: {
             backgroundColor: '#578FCA',
             borderTopWidth: 0,
@@ -58,7 +59,6 @@ const MainTabNavigator = () => {
           tabBarLabelStyle: {
             fontSize: 12,
             textAlign: 'center',
-            color: 'white',
           },
         };
       }}>
@@ -66,32 +66,30 @@ const MainTabNavigator = () => {
         name="homeTab"
         options={{
           headerShown: false,
-          animation : 'shift',
+          animation: 'shift',
           tabBarLabel: 'Home',
-
-
-        }
-      }
+        }}
         component={AttendanceStackNavigator}
       />
 
       <MainTab.Screen
         name="attendanceHistoryTab"
         options={{
-         headerShown: false,
-          animation :'shift',
+          headerShown: false,
+          animation: 'shift',
+          tabBarLabel: 'Attendance History',
         }}
         component={AttendanceLog}
       />
       <MainTab.Screen
         name="profileTab"
-        options={{headerShown: false,
-          title: 'Profile',
-          animation :'shift',
+        options={{
+          headerShown: false,
+          // title: 'Profile',
+          animation: 'shift',
           tabBarLabel: 'Profile',
         }}
         component={ProfileScreen}
-
       />
     </MainTab.Navigator>
   );
@@ -107,7 +105,16 @@ const AttendanceStackNavigator = () => {
       />
       <AttendanceStack.Screen
         name="checkinout"
-        options={{title: 'Attendance'}}
+        options={{
+          title: 'Attendance',
+          headerStyle: {
+            backgroundColor: '#578FCA',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
         component={CheckInOut}
       />
     </AttendanceStack.Navigator>

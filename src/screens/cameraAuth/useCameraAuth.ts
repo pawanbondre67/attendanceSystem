@@ -149,7 +149,7 @@ const useCameraAuth = () => {
 
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
-  const {employeeId, employeeDetails} = useAppSelector(state => state.employee);
+  const {employeeId, employeeDetailsState} = useAppSelector(state => state.employee);
   const [register, {isLoading, error}] = useRegisterMutation();
 
 
@@ -175,7 +175,7 @@ const useCameraAuth = () => {
         mip: deviceIp,
         EmployeeMaster_Fid: employeeId,
         IMEINumber: imei,
-        CustomerCode: employeeDetails?.CustomerCode,
+        CustomerCode: employeeDetailsState?.CustomerCode,
         AppImage_I: {
           uri: `file://${images.straight}`,
           name: 'straight.jpg',
@@ -265,7 +265,7 @@ const useCameraAuth = () => {
               !isLoading && !error
                 ? navigation.replace('mainTabNavigator', { screen: 'homeTab' })
                 : null;
-              dispatch(setSnackMessage('Attendance marked successfully'));
+              dispatch(setSnackMessage('Registration completed successfully'));
             } catch (apiError) {
               console.error('API Error:', apiError);
               if ((apiError as Error).message === 'Network request failed') {

@@ -162,21 +162,24 @@ const CheckInOut = (props: Props) => {
               resizeMethod="auto"
             />
           ) : showCamera ? (
-          <>  <Image
-          source={require('../../assets/face-outline.png')}
-          style={styles.faceOutline}
-          resizeMethod="auto"
-        />
-        <Camera
-          style={StyleSheet.absoluteFill}
-          ref={cameraRef}
-          device={device}
-          preview={true}
-          isActive={true}
-          // isMirrored={true}
-          outputOrientation="device"
-          photo={true}
-        /></>
+            <>
+              {' '}
+              <Image
+                source={require('../../assets/face-outline.png')}
+                style={styles.faceOutline}
+                resizeMethod="auto"
+              />
+              <Camera
+                style={StyleSheet.absoluteFill}
+                ref={cameraRef}
+                device={device}
+                preview={true}
+                isActive={true}
+                // isMirrored={true}
+                outputOrientation="device"
+                photo={true}
+              />
+            </>
           ) : (
             <Text style={styles.placeholderText}>Take a photo</Text>
           )}
@@ -197,15 +200,23 @@ const CheckInOut = (props: Props) => {
         )}
       </View>
 
-      <View style={styles.button}>
+      <View style={{width: '100%'}}>
         {showCamera ? (
-          <Button mode="contained" onPress={takePhoto} style={styles.button}>
+          <Button
+            mode="outlined"
+            textColor="#fff"
+            onPress={takePhoto}
+            style={styles.button}>
             Take A Photo
           </Button>
         ) : markAttendanceResult.isLoading ? (
           <ActivityIndicator size="small" color="#0000ff" />
         ) : (
-          <Button mode="contained" onPress={onSubmit} style={styles.button}>
+          <Button
+            mode="outlined"
+            onPress={onSubmit}
+            textColor="#fff"
+            style={styles.button}>
             Mark Attendance
           </Button>
         )}
@@ -256,7 +267,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 100,
   },
-  faceOutline:{
+  faceOutline: {
     width: '100%',
     height: '100%',
     zIndex: 1,
@@ -272,6 +283,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
+    backgroundColor: '#578FCA',
+
     width: '100%',
     padding: 10,
   },

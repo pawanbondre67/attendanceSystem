@@ -10,16 +10,18 @@ import {
 // import {RootStackParamList} from '../../types/types';
 import {useAppDispatch} from '../../redux/hook/hook';
 import {
-  setEmployeeDetails,
+  setEmployeeDetailsState,
   setEmployeeId,
 } from '../../redux/slices/Employee/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
+import useLocalStorage from '../home/useLocalStorage';
 
 export interface Errors {
   CustomerCode: string;
   UserName: string;
   Password: string;
+  EmployeeId?: string;
 }
 
 export interface CustomerData extends Errors {}
@@ -30,6 +32,7 @@ const useLogin = () => {
     CustomerCode: 'OTD1000',
     UserName: 'Shivani',
     Password: '1',
+    EmployeeId: '',
   });
   const [errors, setErrors] = useState<Errors>({
     CustomerCode: '',
@@ -37,6 +40,7 @@ const useLogin = () => {
     Password: '',
   });
   const [loginUser, loginResult] = useLazyLoginQuery();
+  // const {updateEmployeeDetails} = useLocalStorage();
   // const [employeeId, setEmployeeID] = useState('');
 
   const dispatch = useAppDispatch();
@@ -63,6 +67,22 @@ const useLogin = () => {
       console.error('Failed to save employee details to local storage', error);
     }
   };
+
+  // const updateEmployeeDetails = async (  newDetails: Partial<CustomerData>,) => {
+  //   try {
+  //     const updatedDetails = {
+  //       ...customerData,
+  //       ...newDetails,
+  //     } as CustomerData; // Add type assertion here
+
+  //     await updateEmployeeDetails(updatedDetails);
+  //     console.log('Employee details updated:', updatedDetails);
+  //   } catch (error) {
+  //     console.error('Failed to update employee details:', error);
+  //   }
+  // };
+
+
   const handleLogin = async (navigation: any) => {
     const validationErrors = checkValidation(customerData);
     if (validationErrors) {
@@ -88,8 +108,9 @@ const useLogin = () => {
 
         if (response?.data) {
           dispatch(setEmployeeId(response?.data?.employeeId.toString()));
-          dispatch(setEmployeeDetails(customerData));
+          dispatch(setEmployeeDetailsState(customerData));
           await saveEmployeeDetailsToLocal(customerData);
+          // await updateEmployeeDetails({ EmployeeId: response?.data?.employeeId.toString() });
 
           // Use the response object directly
           console.log(
@@ -100,7 +121,7 @@ const useLogin = () => {
           navigation.navigate(
             response.data.isAppRegisterMandatory
               ? 'cameraAuthScreen'
-              : 'cameraAuthScreen',
+              : 'mainTabNavigator',
           );
         }
       } catch (error: any) {

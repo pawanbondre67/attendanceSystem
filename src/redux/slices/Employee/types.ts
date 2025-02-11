@@ -1,6 +1,6 @@
 export interface employeeState {
   employeeId: string | undefined;
-  employeeDetails: {
+  employeeDetailsState: {
     CustomerCode: string;
     UserName: string;
     Password: string;

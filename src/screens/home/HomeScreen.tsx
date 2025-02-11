@@ -1,16 +1,22 @@
-import {CommonActions} from '@react-navigation/native';
-import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useAppSelector} from '../../redux/hook/hook';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Clock from '../../components/Clock';
 import useLocation from '../../helper/location';
 import useLocalStorage from './useLocalStorage';
 import {Button} from 'react-native';
-import {Alert} from 'react-native';
+
+import LogoutDialog from '../../components/Dialog';
 // import { useTheme } from '../../theme/ThemeProvider';
 // import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -31,64 +37,47 @@ const HomeScreen = ({navigation}: any) => {
   const {employeeId} = useAppSelector(state => state.employee);
   // console.log('status returing from globsl state', status);
 
-  const {employeeDetails, attendanceData} = useLocalStorage();
-  console.log('employeeDetails', employeeDetails);
-  console.log('attendanceData from local storage', attendanceData);
+  const {employeeDetails, attendanceData} =
+    useLocalStorage({
+      navigation,
+    });
 
-  const confirmLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {text: 'OK', onPress: deleteEmployeeId},
-    ]);
-  };
+  const [dialogVisible, setDialogVisible] = useState(false);
 
-  // Function to delete employeeId from local storage
-  const deleteEmployeeId = async () => {
-    try {
-      await AsyncStorage.removeItem('employeeDetails');
-      await AsyncStorage.removeItem('attendanceData');
-      console.log('employeeId deleted from local storage');
-      // Optionally, navigate to another screen or update state
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'loginScreen'}],
-        }),
-      );
-    } catch (error) {
-      console.error('Failed to delete employeeId from local storage', error);
-    }
-  };
+  const showDialog = () => setDialogVisible(true);
+  const hideDialog = () => setDialogVisible(false);
+
 
   return (
     <SafeAreaView style={styles.maincontainer}>
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
-          <Image
-            style={styles.userImage}
-            source={{
-              uri: 'https://avatar.iran.liara.run/public/boy?username=pawan',
-            }} // Placeholder image
-          />
+          <TouchableWithoutFeedback
+            onPress={() => navigation.navigate('profileTab')}>
+            <Image
+              style={styles.userImage}
+              source={{
+                uri: employeeDetails?.ProfilePic
+                  ? employeeDetails?.ProfilePic
+                  : 'https://avatar.iran.liara.run/public/boy?username=pawan',
+              }} // Placeholder image
+            />
+          </TouchableWithoutFeedback>
           <View>
             <Text style={styles.userName}>{employeeDetails?.UserName}</Text>
             <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
-        <Icon name="logout" onPress={confirmLogout} size={24} color="#000" />
+        <Icon name="logout" onPress={showDialog} size={24} color="#fff" />
       </View>
 
       <View style={styles.container}>
-        {/* Time Display
-        <View style={styles.timeSection}>
-          <Text style={styles.time}>{currentTime}</Text>
-          <Text style={styles.date}>Feb 01, 2024 - Thursday</Text>
-        </View> */}
+
+
+        <LogoutDialog navigation={navigation} visible={dialogVisible} hideDialog={hideDialog} />
+
+
         <Clock />
 
         <View style={styles.location}>
@@ -184,7 +173,7 @@ const styles = StyleSheet.create({
     // marginTop: 40,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    // backgroundColor: 'red',
+    backgroundColor: '#578FCA',
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
@@ -201,9 +190,10 @@ const styles = StyleSheet.create({
   userName: {
     fontWeight: 'bold',
     fontSize: 16,
+    color: '#fff',
   },
   userId: {
-    color: '#888',
+    color: '#fff',
   },
   loaderText: {
     marginTop: 10,

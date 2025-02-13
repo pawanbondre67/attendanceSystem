@@ -129,12 +129,12 @@ const CameraAuth = () => {
           photo={true}
           ref={camera}
         />
-        <LottieView
+        {/* <LottieView
           source={require('../../assets/face.json')} // Path to Lottie file
           autoPlay
           loop
           style={styles.lottie}
-        />
+        /> */}
       </View>
       <View style={styles.verificationContainer}>
         {step < 4 ? (
@@ -200,29 +200,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginTop: 20,
   },
-  // cameraContainer: {
-  //   flex: 1,
-  //   // backgroundColor: 'red',
-
-  //   width: '100%',
-  //   // justifyContent: 'center',
-  //   // alignItems: 'center',
-  //   position: 'relative', // Make sure the container is positioned relatively
-  // },
-  // camera: {
-  //   width: '100%', // Make the camera fill the container
-  //   height: 300, // Make the camera fill the container
-  //   position: 'absolute', // Ensure it covers the entire container
-  //   top: 60, // Align the top of the camera to the top of the container
-  // },
-  // lottie: {
-  //   width: '100%', // Lottie animation takes the same width as the camera
-  //   height: '100%', // Lottie animation takes the same height as the camera
-  //   position: 'absolute', // Ensure the Lottie animation overlaps the camera
-  //   top: -80, // Align the top of the Lottie to the top of the container
-  //   // Align the left of the Lottie to the left of the container
-  // },
-
   cameraContainer: {
     width: '90%',
 

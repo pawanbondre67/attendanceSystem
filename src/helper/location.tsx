@@ -1,21 +1,26 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {isIos} from '../helper/utility';
 import {useNavigation} from '@react-navigation/native';
 
-const useLocation = ({isHomeScreen}: {isHomeScreen: boolean}) => {
+const useLocation = () => {
   const [currentLongitude, setCurrentLongitude] = useState<number | null>(null);
   const [currentLatitude, setCurrentLatitude] = useState<number | null>(null);
   const [locationStatus, setLocationStatus] = useState('');
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+
+  const locationUpdated = useRef(false); // Flag to track if location has been updated
+
   // let watchID: number = 0;
   const navigation = useNavigation();
   useEffect(() => {
     // Function to request location permission
     const requestLocationPermission = async () => {
+ 
       if (Platform.OS === 'ios') {
         // For iOS, get location and subscribe to location updates
+
         getOneTimeLocation();
         // subscribeLocationLocation();
       } else {
@@ -46,13 +51,10 @@ const useLocation = ({isHomeScreen}: {isHomeScreen: boolean}) => {
     };
 
     // Call the function to request location permission
-    requestLocationPermission();
-
-    // // Cleanup function to clear the location watch when the component unmounts
-    // return () => {
-    //   Geolocation.clearWatch(watchID);
-    // };
-  }, [isHomeScreen]); // Empty dependency array ensures this runs only once when the component mounts
+    if (!locationUpdated.current) {
+      requestLocationPermission();
+    }
+  }, []);// Empty dependency array ensures this runs only once when the component mounts
 
 
 
@@ -63,8 +65,7 @@ const useLocation = ({isHomeScreen}: {isHomeScreen: boolean}) => {
       position => {
         setIsFetchingLocation(false);
         setLocationStatus('You are Here');
-        // const currentLongitude = position.coords.longitude;
-        // const currentLatitude = position.coords.latitude;
+        locationUpdated.current = true; // Set flag to true after updating location
         setCurrentLongitude(position.coords.longitude);
         setCurrentLatitude(position.coords.latitude);
       },

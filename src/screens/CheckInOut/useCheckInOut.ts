@@ -53,7 +53,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     state => state.attendance,
   );
 
-  console.log('CheckInOutData from local storage', attendanceData);
+  // console.log('CheckInOutData from local storage', attendanceData);
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
   // const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
   // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
@@ -61,7 +61,6 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
   const [checkOut, checkOutResult] = useCheckOutMutation();
   const route = useRoute<CheckInOutRouteProp>();
   const btnLabel = route.params?.type;
-  // console.log('btnLabel', btnLabel);
   const navigation = useNavigation();
 
   const [checkInOutData, setCheckinOutData] = useState<CheckInOutData>({

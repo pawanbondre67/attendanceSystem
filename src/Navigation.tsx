@@ -15,6 +15,7 @@ import CheckInOut from './screens/CheckInOut';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AttendanceLog from './screens/AttendanceLog';
 import ProfileScreen from './screens/profile/ProfileScreen';
+import { isIos } from './helper/utility';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 const AttendanceStack = createNativeStackNavigator<AttendanceStackParamList>();
@@ -53,7 +54,8 @@ const MainTabNavigator = () => {
             backgroundColor: '#578FCA',
             borderTopWidth: 0,
             elevation: 0,
-            height: 70,
+            height:  isIos ? 90 : 70,
+            paddingTop: isIos ? 10 : 5,
             display: isCheckInOutScreen ? 'none' : 'flex', // Hide tab bar for CheckInOut screen
           },
           tabBarLabelStyle: {
@@ -96,6 +98,7 @@ const MainTabNavigator = () => {
 };
 
 const AttendanceStackNavigator = () => {
+  
   return (
     <AttendanceStack.Navigator initialRouteName="homeScreen">
       <AttendanceStack.Screen
@@ -110,6 +113,7 @@ const AttendanceStackNavigator = () => {
           headerStyle: {
             backgroundColor: '#578FCA',
           },
+          headerBackTitle: 'Back',
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontWeight: 'bold',

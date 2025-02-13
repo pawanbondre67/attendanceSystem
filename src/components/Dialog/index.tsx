@@ -23,16 +23,16 @@ const LogoutDialog = ({visible, hideDialog, navigation}: LogoutDialogProps) => {
           visible={visible}
           onDismiss={hideDialog}
           style={styles.container}>
-          <Dialog.Title>Logout</Dialog.Title>
+          <Dialog.Title style={{color:'#fff'}}>Logout</Dialog.Title>
           <Dialog.Content>
-            <Text variant="bodyMedium">Are you sure you want to logout?</Text>
+            <Text variant="bodyMedium" style={{color:'#fff'}}>Are you sure you want to logout?</Text>
           </Dialog.Content>
           <Dialog.Actions>
             <Button style={styles.button} onPress={Logout}>
-              <Text>Yes</Text>
+              <Text style={{color:'#fff'}}>Yes</Text>
             </Button>
             <Button style={styles.button} onPress={hideDialog}>
-              <Text>Cancel</Text>
+              <Text style={{color:'#fff'}}>Cancel</Text>
             </Button>
           </Dialog.Actions>
         </Dialog>

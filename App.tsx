@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 
-import {StyleSheet} from 'react-native';
+import {StatusBar, StyleSheet} from 'react-native';
 // import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -65,10 +65,9 @@ function App(): React.JSX.Element {
         <PaperProvider>
           <ThemeProvider>
             <AuthProvider>
-              {/* <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      /> */}
+              <StatusBar
+        backgroundColor= "#000"
+      />
 
               {/* <GestureHandlerRootView> */}
               <NavigationContainer>

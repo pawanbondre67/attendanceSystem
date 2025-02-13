@@ -8,48 +8,46 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useAppSelector} from '../../redux/hook/hook';
 
 import Clock from '../../components/Clock';
 import useLocation from '../../helper/location';
 import useLocalStorage from './useLocalStorage';
-import {Button} from 'react-native';
 
 import LogoutDialog from '../../components/Dialog';
-// import { useTheme } from '../../theme/ThemeProvider';
-// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {isIos} from '../../helper/utility';
 const HomeScreen = ({navigation}: any) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   // const {Colors, dark} = useTheme();
 
-  const isHomeScreen = true;
-
   const {
     currentLatitude,
-    currentLongitude,
-    getOneTimeLocation,
-    isFetchingLocation,
-  } = useLocation({isHomeScreen});
+    // currentLongitude,
+    // getOneTimeLocation,
+    // isFetchingLocation,
+  } = useLocation();
   console.log('currentLatitude at home screen', currentLatitude);
   // const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
   const {employeeId} = useAppSelector(state => state.employee);
   // console.log('status returing from globsl state', status);
 
-  const {employeeDetails, attendanceData} =
-    useLocalStorage({
-      navigation,
-    });
+  const {employeeDetails, attendanceData} = useLocalStorage({
+    navigation,
+  });
 
   const [dialogVisible, setDialogVisible] = useState(false);
 
   const showDialog = () => setDialogVisible(true);
   const hideDialog = () => setDialogVisible(false);
-
+  const insets = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={styles.maincontainer}>
+    <View
+      style={[
+        styles.maincontainer,
+        {paddingTop: insets.top, paddingBottom: insets.bottom},
+      ]}>
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.userInfo}>
@@ -65,7 +63,10 @@ const HomeScreen = ({navigation}: any) => {
             />
           </TouchableWithoutFeedback>
           <View>
-            <Text style={styles.userName}>{employeeDetails?.UserName}</Text>
+            <Text style={styles.userName}>
+              <Text style={{fontWeight: 300}}>welcome,</Text>{' '}
+              {employeeDetails?.UserName}
+            </Text>
             <Text style={styles.userId}>{employeeId}</Text>
           </View>
         </View>
@@ -73,23 +74,24 @@ const HomeScreen = ({navigation}: any) => {
       </View>
 
       <View style={styles.container}>
-
-
-        <LogoutDialog navigation={navigation} visible={dialogVisible} hideDialog={hideDialog} />
-
+        <LogoutDialog
+          navigation={navigation}
+          visible={dialogVisible}
+          hideDialog={hideDialog}
+        />
 
         <Clock />
 
-        <View style={styles.location}>
+        {/* <View style={styles.location}>
           <Text>Latitude: {currentLatitude}</Text>
           <Text>Longitude: {currentLongitude}</Text>
 
           <Button title="Refresh Location" onPress={getOneTimeLocation} />
           {isFetchingLocation && <Text>Fetching location...</Text>}
-        </View>
+        </View> */}
 
         {/* Punch In Button */}
-        <View style={styles.container}>
+        <View style={styles.btncontainer}>
           {attendanceData?.status === 'in' ? (
             <View style={styles.outerCircle}>
               <TouchableOpacity
@@ -146,20 +148,25 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   maincontainer: {
     flex: 1,
-    // backgroundColor: 'red',
+    backgroundColor: isIos ? '#578FCA' : '',
   },
   container: {
-    flex: 1,
-    justifyContent: 'center',
+    height: '100%',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#f7f7f7',
+  },
+  btncontainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   location: {
     flexDirection: 'column',
@@ -169,9 +176,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // padding: 20,
-    // marginTop: 40,
     paddingHorizontal: 20,
+    paddingTop: isIos ? 0 : 10,
     paddingVertical: 10,
     backgroundColor: '#578FCA',
     borderBottomWidth: 1,
@@ -248,6 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingVertical: 20,
     backgroundColor: '#fff',
+    marginBottom: isIos ? 20 : 70,
     // borderTopWidth: 1,
     // borderBottomWidth: 1,
     // borderColor: '#ddd',

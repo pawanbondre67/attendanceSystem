@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Text, StyleSheet, View} from 'react-native';
 import moment from 'moment';
-import axios from 'axios';
 const Clock = () => {
   const [currentTime, setCurrentTime] = useState<string>('');
 
@@ -13,27 +12,18 @@ const Clock = () => {
   }, []);
 
   useEffect(() => {
-
     const fetchTime = async () => {
       try {
-        const response = await axios.get('https://timeapi.io/api/time/current/zone?timeZone=Asia%2FCalcutta');
-        const { time  } = response.data;
-        // setCurrentDate(date);
-        setCurrentTime(time);
+        const momentTime = moment().format('LT');
+        // console.error('momentTime', momentTime);
+        setCurrentTime(momentTime);
       } catch (error) {
         console.log('Error fetching time:', error);
       }
     };
 
     fetchTime();
-    // const interval = setInterval(() => {
-      // const timeString = getCurrentTimeIn12HourFormat();
-      // setCurrentTime(timeString);
-    // }, 1000);
-
-    // return () => clearInterval(interval);
-
-    const interval = setInterval(fetchTime, 60000); // Update  every minute
+    const interval = setInterval(fetchTime, 1000); // Update  every minute
 
     return () => clearInterval(interval);
   }, []);
@@ -42,16 +32,18 @@ const Clock = () => {
   //   return moment().format('hh:mm A');
   // };
 
-  return <View style={styles.timeSection}>
-  <Text style={styles.time}>{currentTime}</Text>
-  <Text style={styles.date}>{currentDate}</Text>
-</View>;
+  return (
+    <View style={styles.timeSection}>
+      <Text style={styles.time}>{currentTime}</Text>
+      <Text style={styles.date}>{currentDate}</Text>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
   timeSection: {
     alignItems: 'center',
-    marginVertical: 20,
+    marginTop: -50,
   },
   time: {
     fontSize: 48,

@@ -164,6 +164,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { isIos } from '../../helper/utility';
 
 const INITIAL_DATE = new Date().toISOString().split('T')[0];
 
@@ -195,7 +196,7 @@ const CalendarScreen = () => {
 
     return (
       <View>
-        <View style={styles.customHeaderContainer}>
+        <View>
           {/* <TouchableOpacity onPress={onPressArrowLeft}>
             <MaterialCommunityIcons name="chevron-left" size={28} color="black" />
           </TouchableOpacity> */}
@@ -239,13 +240,13 @@ const CalendarScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'white',
-    marginBottom: 120,
+    // flex: 1,
+    backgroundColor: '#f5f5f5',
+    // marginBottom: isIos ? 0 : 120,
 
   },
   calendar: {
-    margin: 10,
+    // margin: 10,
     borderRadius: 10,
   },
   customHeaderText:{

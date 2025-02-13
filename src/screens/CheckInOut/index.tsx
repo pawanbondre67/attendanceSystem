@@ -17,16 +17,21 @@ import {PERMISSIONS, request} from 'react-native-permissions';
 import ImageResizer from '@bam.tech/react-native-image-resizer';
 import {isIos} from '../../helper/utility';
 import useLocation from '../../helper/location';
-
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 type Props = {};
-const CheckInOut = (props: Props) => {
-  const isHomeScreen = false;
-  const {
-    getOneTimeLocation,
-    currentLatitude,
-    currentLongitude,
-    isFetchingLocation,
-  } = useLocation({isHomeScreen});
+const CheckInOut = ({navigation}: Props) => {
+  // Set header options
+  navigation.setOptions({
+    // eslint-disable-next-line react/no-unstable-nested-components
+    headerRight: () =>
+      isFetchingLocation ? (
+        <ActivityIndicator size="small" color="#fff" />
+      ) : (
+        <FontAwesome6 name="location-crosshairs" size={22} color="#fff" />
+      ),
+  });
+
+  const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
   const {
     onSubmit,
     markAttendanceResult,
@@ -175,7 +180,6 @@ const CheckInOut = (props: Props) => {
                 device={device}
                 preview={true}
                 isActive={true}
-                // isMirrored={true}
                 outputOrientation="device"
                 photo={true}
               />
@@ -186,21 +190,9 @@ const CheckInOut = (props: Props) => {
         </TouchableOpacity>
         <Text style={styles.note}>Make sure to upload a clear face selfie</Text>
 
-        {isFetchingLocation ? (
-          <View>
-            <ActivityIndicator size="small" color="#0000ff" />
-          </View>
-        ) : (
-          <View>
-            <Text>Latitude: {currentLatitude}</Text>
-            <Text>Longitude: {currentLongitude}</Text>
-
-            <Button onPress={getOneTimeLocation}>Refresh Location</Button>
-          </View>
-        )}
       </View>
 
-      <View style={{width: '100%'}}>
+      <View style={{width: '100%' , marginTop:50,}}>
         {showCamera ? (
           <Button
             mode="outlined"
@@ -209,17 +201,15 @@ const CheckInOut = (props: Props) => {
             style={styles.button}>
             Take A Photo
           </Button>
-        ) : markAttendanceResult.isLoading ? (
-          <ActivityIndicator size="small" color="#0000ff" />
-        ) : (
+        ) :  (
           <Button
             mode="outlined"
             onPress={onSubmit}
             textColor="#fff"
             style={styles.button}>
-            Mark Attendance
+            Mark Attendance {markAttendanceResult?.isLoading && <ActivityIndicator />}
           </Button>
-        )}
+        ) }
       </View>
     </View>
   );
@@ -232,25 +222,28 @@ const styles = StyleSheet.create({
     padding: 20,
     flexDirection: 'column',
     alignItems: 'center',
-    gap: 20,
+   justifyContent: 'center',
   },
   imageContainer: {
     // marginTop: '10%',
-    paddingVertical: '20%',
+    // paddingVertical: '20%',
+    paddingVertical: 20,
     width: '100%',
-    backgroundColor: 'lightblue',
+    // backgroundColor: 'lightblue',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 20,
   },
   imagebody: {
-    width: 300,
-    height: 300,
+    width: 340,
+    height: 350,
     backgroundColor: '#e0e0e0',
-    borderRadius: 100,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    borderWidth: 4,
+    borderColor: '#00BFA6',
   },
 
   placeholderText: {
@@ -265,7 +258,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 100,
+    // borderRadius: 100,
   },
   faceOutline: {
     width: '100%',

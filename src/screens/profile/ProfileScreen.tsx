@@ -11,7 +11,7 @@ import useLocalStorage from '../home/useLocalStorage';
 import {useAppSelector} from '../../redux/hook/hook';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LogoutDialog from '../../components/Dialog';
-
+import { isIos } from '../../helper/utility';
 const ProfileScreen = ({navigation} :  any) => {
   const [profilePic, setProfilePic] = useState(null);
 
@@ -127,7 +127,7 @@ const ProfileScreen = ({navigation} :  any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    // backgroundColor: '#',
     position: 'relative',
     // alignItems: 'center',
   },
@@ -136,10 +136,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#578FCA',
     width: '100%',
-    // height: '35%',
   },
   backArrow: {
-    top: 30,
+    top: isIos ? 55 : 30,
     left: 20,
   },
   profileContainer: {

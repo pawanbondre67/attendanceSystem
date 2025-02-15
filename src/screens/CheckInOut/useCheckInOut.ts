@@ -53,7 +53,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     state => state.attendance,
   );
 
-  // console.log('CheckInOutData from local storage', attendanceData);
+
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
   // const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
   // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
@@ -76,19 +76,6 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     location: '',
   });
 
-  // useEffect(() => {
-  //   if (latestStatusData) {
-  //     console.log('latestStatusData', latestStatusData);
-  //     dispatch(
-  //       setAttendanceData({
-  //         ...attendanceData,
-  //         status: latestStatusData.data.status,
-  //       }),
-  //     );
-  //   }
-  // } , [latestStatusData]);
-  // console.log('only after mark attendace data is updated', attendanceData);
-
   useEffect(() => {
     if (!checkInOutData.latitude || !checkInOutData.longitude) {
       setCheckinOutData(prevData => ({
@@ -104,11 +91,11 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     checkInOutData.longitude,
   ]);
 
-  // console.log('checkout result data', checkOutResult);
-  console.log('after marking attendance resp data', markAttendanceResult);
-  // console.log('currentLong', currentLongitude);
-  // console.log('currentLat inside hook', currentLatitude);
-  console.log('checkInOutData chi image', checkInOutData);
+  // // console.log('checkout result data', checkOutResult);
+  // console.log('after marking attendance resp data', markAttendanceResult);
+  // // console.log('currentLong', currentLongitude);
+  // // console.log('currentLat inside hook', currentLatitude);
+  // console.log('checkInOutData chi image', checkInOutData);
 
   const {currentTime, currentDate, currentTime12} = formatDate();
   const {employeeId, employeeDetailsState} = useAppSelector(state => state.employee);
@@ -369,6 +356,7 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     pickImage,
     btnLabel,
     markAttendanceResult,
+    checkOutResult,
     proceedMarkAttendance,
     onPhotoCapture,
   };

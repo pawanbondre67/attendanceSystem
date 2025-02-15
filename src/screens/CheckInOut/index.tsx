@@ -18,7 +18,11 @@ import ImageResizer from '@bam.tech/react-native-image-resizer';
 import {isIos} from '../../helper/utility';
 import useLocation from '../../helper/location';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-type Props = {};
+import { useAppDispatch } from '../../redux/hook/hook';
+import { setSnackMessage } from '../../redux/slices/snackbarSlice';
+type Props = {
+
+};
 const CheckInOut = ({navigation}: Props) => {
   // Set header options
   navigation.setOptions({
@@ -35,7 +39,7 @@ const CheckInOut = ({navigation}: Props) => {
   const {
     onSubmit,
     markAttendanceResult,
-
+    checkOutResult,
     onPhotoCapture,
   } = useCheckInOut({currentLatitude, currentLongitude});
   const device = useCameraDevice('front');
@@ -50,6 +54,9 @@ const CheckInOut = ({navigation}: Props) => {
     checkCameraPermission();
   }, []);
 
+  const dispatch = useAppDispatch();
+
+
   const checkCameraPermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -59,6 +66,7 @@ const CheckInOut = ({navigation}: Props) => {
           setIsCameraReady(true); // Update state to indicate camera is ready
         } else {
           console.log('Camera permission denied');
+          dispatch(setSnackMessage('Camera permission  denied'));
           // Handle permission denial (e.g., show a message or disable camera features)
         }
       } catch (err) {
@@ -71,7 +79,8 @@ const CheckInOut = ({navigation}: Props) => {
           console.log('Camera permission granted');
           setIsCameraReady(true); // Update state to indicate camera is ready
         } else {
-          console.log('Camera permission denied');
+          // console.log('Camera permission denied');
+          dispatch(setSnackMessage('Camera permission denied'));
           // Handle permission denial (e.g., show a message or disable camera features)
         }
       } catch (err) {
@@ -168,7 +177,6 @@ const CheckInOut = ({navigation}: Props) => {
             />
           ) : showCamera ? (
             <>
-              {' '}
               <Image
                 source={require('../../assets/face-outline.png')}
                 style={styles.faceOutline}
@@ -205,9 +213,10 @@ const CheckInOut = ({navigation}: Props) => {
           <Button
             mode="outlined"
             onPress={onSubmit}
+            disabled={isFetchingLocation}
             textColor="#fff"
             style={styles.button}>
-            Mark Attendance {markAttendanceResult?.isLoading && <ActivityIndicator />}
+            Mark Attendance {markAttendanceResult?.isLoading || checkOutResult.isLoading  &&  <ActivityIndicator size="small" color="#fff" />}
           </Button>
         ) }
       </View>
@@ -277,7 +286,6 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     backgroundColor: '#578FCA',
-
     width: '100%',
     padding: 10,
   },

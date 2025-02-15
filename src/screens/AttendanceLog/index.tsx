@@ -1,12 +1,30 @@
-import {View, Text, StyleSheet, ScrollView, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  FlatList,
+} from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import CalendarScreen from './CalendarScreen';
 import CustomCard from './CustomCard';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import ExpandableCalendarScreen from './components/calender/src/screens/expandableCalendarScreen';
 
 const AttendanceLog = () => {
   const insets = useSafeAreaInsets();
+  // const data = [
+  //   {date: '12/01/2025', inTime: '09:00', outTime: '18:00'},
+  //   {date: '13/01/2025', inTime: '09:00', outTime: '18:00'},
+  //   {date: '14/01/2025', inTime: '09:00', outTime: '18:00'},
+  //   {date: '15/01/2025', inTime: '09:00', outTime: '18:00'},
+  // ];
+
+  // const renderItem = ({item}) => (
+  //   <CustomCard date={item.date} inTime={item.inTime} outTime={item.outTime} />
+  // );
 
   return (
     <View
@@ -21,13 +39,14 @@ const AttendanceLog = () => {
         <Text style={styles.headerText}>Attendance History</Text>
         <MaterialCommunityIcons name="dots-vertical" size={28} color="white" />
       </View>
-      <CalendarScreen />
-      <ScrollView style={styles.scrollView}>
-        <CustomCard date="12/01/2025" inTime="09:00" outTime="18:00" />
-        <CustomCard date="13/01/2025" inTime="09:00" outTime="18:00" />
-        <CustomCard date="14/01/2025" inTime="09:00" outTime="18:00" />
-        <CustomCard date="15/01/2025" inTime="09:00" outTime="18:00" />
-      </ScrollView>
+      {/* <CalendarScreen /> */}
+      <ExpandableCalendarScreen />
+      {/* <FlatList
+        style={styles.scrollView}
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={item => item.date}
+      /> */}
     </View>
   );
 };

@@ -1,6 +1,11 @@
 import React, {useRef, useCallback} from 'react';
-import {StyleSheet} from 'react-native';
-import {ExpandableCalendar, AgendaList, CalendarProvider, WeekCalendar} from 'react-native-calendars';
+import {StyleSheet, Text, View} from 'react-native';
+import {
+  ExpandableCalendar,
+  AgendaList,
+  CalendarProvider,
+  WeekCalendar,
+} from 'react-native-calendars';
 import testIDs from '../testIDs';
 import {agendaItems, getMarkedDates} from '../mocks/agendaItems';
 import AgendaItem from '../mocks/AgendaItem';
@@ -15,11 +20,12 @@ interface Props {
 }
 
 const ExpandableCalendarScreen = (props: Props) => {
+  console.log('ExpandableCalendarScreen props: ', props);
   const {weekView} = props;
-  const marked = useRef(getMarkedDates());
+  // const marked = useRef(getMarkedDates());
   const theme = useRef(getTheme());
   const todayBtnTheme = useRef({
-    todayButtonTextColor: themeColor
+    todayButtonTextColor: themeColor,
   });
 
   // const onDateChanged = useCallback((date, updateSource) => {
@@ -30,9 +36,19 @@ const ExpandableCalendarScreen = (props: Props) => {
   //   console.log('ExpandableCalendarScreen onMonthChange: ', dateString);
   // }, []);
 
-  const renderItem = useCallback(({item}: any) => {
-    return <AgendaItem item={item}/>;
+
+  const renderItem = useCallback(({ item }: any) => {
+    if (!item) {
+      return (
+        <View style={{ padding: 20 }}>
+          <Text>No data available</Text>
+        </View>
+      );
+    }
+    return <AgendaItem item={item} />;
   }, []);
+   
+  const keyExtractor = useCallback((item, index) => index.toString(), []);
 
   return (
     <CalendarProvider
@@ -45,7 +61,11 @@ const ExpandableCalendarScreen = (props: Props) => {
       // todayBottomMargin={16}
     >
       {weekView ? (
-        <WeekCalendar testID={testIDs.weekCalendar.CONTAINER} firstDay={1} markedDates={marked.current}/>
+        <WeekCalendar
+          testID={testIDs.weekCalendar.CONTAINER}
+          firstDay={1}
+          // markedDates={marked.current}
+        />
       ) : (
         <ExpandableCalendar
           testID={testIDs.expandableCalendar.CONTAINER}
@@ -60,19 +80,20 @@ const ExpandableCalendarScreen = (props: Props) => {
           theme={theme.current}
           // disableAllTouchEventsForDisabledDays
           firstDay={1}
-          markedDates={marked.current}
+          // markedDates={marked.current}
           leftArrowImageSource={leftArrowIcon}
           rightArrowImageSource={rightArrowIcon}
-          // animateScroll
+          animateScroll
           // closeOnDayPress={false}
         />
       )}
       <AgendaList
-        sections={ITEMS}
-        renderItem={renderItem}
-        // scrollToNextEvent
-        sectionStyle={styles.section}
-        // dayFormat={'yyyy-MM-d'}
+       sections={ITEMS}
+       renderItem={renderItem}
+       keyExtractor={keyExtractor}
+       initialNumToRender={5}
+       sectionStyle={styles.section}
+
       />
     </CalendarProvider>
   );
@@ -83,14 +104,14 @@ export default ExpandableCalendarScreen;
 const styles = StyleSheet.create({
   calendar: {
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
   },
   header: {
-    backgroundColor: 'lightgrey'
+    backgroundColor: 'lightgrey',
   },
   section: {
     backgroundColor: lightThemeColor,
     color: 'grey',
-    textTransform: 'capitalize'
-  }
+    textTransform: 'capitalize',
+  },
 });

@@ -1,4 +1,3 @@
-
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 
@@ -14,6 +13,7 @@ import {
 import LottieView from 'lottie-react-native';
 import useLocation from '../../helper/location';
 import {ActivityIndicator} from 'react-native-paper';
+import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 
 interface EmployeeDetails {
   CustomerCode: string;
@@ -21,7 +21,7 @@ interface EmployeeDetails {
   Password: string;
 }
 
-const SplashScreen = ({navigation} : any) => {
+const SplashScreen = ({navigation}: any) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isInitialized, setIsInitialized] = useState(false);
   const dispatch = useAppDispatch();
@@ -35,7 +35,7 @@ const SplashScreen = ({navigation} : any) => {
   );
   const {data: latestStatusData, isLoading: isLatestStatusLoading} =
     useLatestStatusQuery();
-  const [loginUser, loginResult] = useLazyLoginQuery();
+  const [loginUser] = useLazyLoginQuery();
 
   const getEmployeeDetailsFromLocal =
     async (): Promise<EmployeeDetails | null> => {
@@ -56,9 +56,11 @@ const SplashScreen = ({navigation} : any) => {
       const response = await loginUser(details, false).unwrap();
       dispatch(setEmployeeId(response?.data?.employeeId.toString()));
       dispatch(setEmployeeDetailsState(details));
-      console.log('User logged in using local storage data');
+      if(response?.data?.isAppRegisterMandatory){
+        navigation.replace('cameraAuthScreen');
+      }
     } catch (error) {
-      console.error('Failed to check user logged in', error);
+      dispatch(setSnackMessage('Login To get Started'));
     }
   };
 
@@ -79,7 +81,7 @@ const SplashScreen = ({navigation} : any) => {
       if (details) {
         await checkUserLoggedIn(details);
       }
-     getOneTimeLocation();
+      getOneTimeLocation();
       setIsInitialized(true);
     };
 
@@ -110,10 +112,8 @@ const SplashScreen = ({navigation} : any) => {
     const currentRoute = navigation.getState().routes?.[0]?.name;
 
     if (employeeDetails && currentRoute !== 'mainTabNavigator') {
-      console.log('Navigating to home');
       navigation.replace('mainTabNavigator');
     } else if (!employeeDetails && currentRoute !== 'loginScreen') {
-      console.log('Navigating to login');
       navigation.replace('loginScreen');
     }
   }, [
@@ -122,22 +122,6 @@ const SplashScreen = ({navigation} : any) => {
     isLatestStatusLoading,
     navigation,
     latestStatusData,
-  ]);
-
-  useEffect(() => {
-    console.log('loginResult', loginResult);
-    console.log('employeeDetails', employeeDetails);
-    console.log('isInitialized', isInitialized);
-    console.log('isLatestStatusLoading', isLatestStatusLoading);
-    console.log('attendanceData', latestStatusData);
-    console.log('isFetchingLocation', isFetchingLocation);
-  }, [
-    loginResult,
-    employeeDetails,
-    isInitialized,
-    isLatestStatusLoading,
-    latestStatusData,
-    isFetchingLocation,
   ]);
 
   return (
@@ -149,7 +133,7 @@ const SplashScreen = ({navigation} : any) => {
         style={styles.lottie}
       />
       {isFetchingLocation ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="small" color="#000" />
       ) : (
         <Text>Initializing...</Text>
       )}

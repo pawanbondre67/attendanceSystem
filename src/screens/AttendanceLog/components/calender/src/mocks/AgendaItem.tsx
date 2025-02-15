@@ -1,8 +1,5 @@
-import isEmpty from 'lodash/isEmpty';
 import React, {useCallback} from 'react';
-import {StyleSheet, Alert, View, Text, TouchableOpacity, Button} from 'react-native';
-import testIDs from '../testIDs';
-
+import {StyleSheet, View, Text} from 'react-native';
 
 interface ItemProps {
   item: any;
@@ -11,75 +8,87 @@ interface ItemProps {
 const AgendaItem = (props: ItemProps) => {
   const {item} = props;
 
-  const buttonPressed = useCallback(() => {
-    Alert.alert('Show me more');
-  }, []);
-
-  const itemPressed = useCallback(() => {
-    Alert.alert(item.title);
-  }, []);
-
-  if (isEmpty(item)) {
+  if (!item.inTime || !item.outTime) {
     return (
       <View style={styles.emptyItem}>
-        <Text style={styles.emptyItemText}>No Events Planned Today</Text>
+        <Text style={styles.emptyItemText}>No Data Available</Text>
       </View>
     );
   }
 
   return (
-    <TouchableOpacity onPress={itemPressed} style={styles.item} testID={testIDs.agenda.ITEM}>
-      <View>
-        <Text style={styles.itemHourText}>{item.hour}</Text>
-        <Text style={styles.itemDurationText}>{item.duration}</Text>
+    <>
+      <View style={styles.cardContainer}>
+        <View style={styles.timeContainer}>
+          <View style={styles.totalhrs}>
+            <Text>Total Hours</Text>
+            <Text style={styles.timeText}>08:00:00 hrs</Text>
+          </View>
+          <View style={styles.totalhrs}>
+            <Text>Check In & Out </Text>
+            <Text style={styles.timeText}>
+              In: {item.inTime} Out: {item.outTime}
+            </Text>
+          </View>
+        </View>
       </View>
-      <Text style={styles.itemTitleText}>{item.title}</Text>
-      <View style={styles.itemButtonContainer}>
-        <Button color={'grey'} title={'Info'} onPress={buttonPressed}/>
-      </View>
-    </TouchableOpacity>
+    </>
   );
 };
 
 export default React.memo(AgendaItem);
 
-
 const styles = StyleSheet.create({
-  item: {
-    padding: 20,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: 'lightgrey',
-    flexDirection: 'row'
-  },
-  itemHourText: {
-    color: 'black'
-  },
-  itemDurationText: {
-    color: 'grey',
-    fontSize: 12,
-    marginTop: 4,
-    marginLeft: 4
-  },
-  itemTitleText: {
-    color: 'black',
-    marginLeft: 16,
-    fontWeight: 'bold',
-    fontSize: 16
-  },
-  itemButtonContainer: {
-    flex: 1,
-    alignItems: 'flex-end'
-  },
   emptyItem: {
     paddingLeft: 20,
     height: 52,
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'lightgrey'
+    alignItems: 'center',
+    // borderBottomWidth: 1,
+    // borderBottomColor: 'lightgrey',
   },
   emptyItemText: {
-    color: 'lightgrey',
-    fontSize: 14
-  }
+    color: '#cdcdcd',
+    fontSize: 14,
+  },
+  cardContainer: {
+    flexDirection: 'column',
+    padding: 10,
+    gap: 10,
+    margin: 10,
+    // borderWidth: 1,
+    // borderColor: 'lightgrey',
+    borderRadius: 10,
+    backgroundColor: 'white',
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    gap: 10,
+    alignItems: 'center',
+    // borderWidth: 1,
+    // borderColor: 'lightgrey',
+    paddingRight: 10,
+  },
+  dateText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: '#F7F7F8',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'lightgrey',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+  },
+  timeText: {
+    fontSize: 16,
+    fontWeight: 500,
+  },
+  totalhrs: {
+    flexDirection: 'column',
+  },
 });

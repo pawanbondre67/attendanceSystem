@@ -15,7 +15,6 @@ import {
 } from '../../redux/slices/Employee/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
-import useLocalStorage from '../home/useLocalStorage';
 
 export interface Errors {
   CustomerCode: string;
@@ -31,7 +30,7 @@ const useLogin = () => {
   const [customerData, setCustomerData] = useState<CustomerData>({
     CustomerCode: 'OTD1000',
     UserName: 'Shivani',
-    Password: '1',
+    Password: '12',
     EmployeeId: '',
   });
   const [errors, setErrors] = useState<Errors>({
@@ -103,20 +102,13 @@ const useLogin = () => {
             errormessage = 'Server returned with status code 500';
           }
           dispatch(setSnackMessage(errormessage));
-          console.error('Login Error:', errormessage);
+          // console.error('Login Error:', errormessage);
         }
 
         if (response?.data) {
           dispatch(setEmployeeId(response?.data?.employeeId.toString()));
           dispatch(setEmployeeDetailsState(customerData));
           await saveEmployeeDetailsToLocal(customerData);
-          // await updateEmployeeDetails({ EmployeeId: response?.data?.employeeId.toString() });
-
-          // Use the response object directly
-          console.log(
-            'isAppRegistermandatory from response:',
-            response.data.isAppRegisterMandatory,
-          );
 
           navigation.navigate(
             response.data.isAppRegisterMandatory

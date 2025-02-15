@@ -9,6 +9,7 @@ import {
   Keyboard,
   Platform,
   KeyboardAvoidingView,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
 // import {NavigationProp, useNavigation} from '@react-navigation/native';
@@ -18,12 +19,13 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 // import {useAuth} from '../../context/AuthProvider';
 import useLogin from './useLogin';
+import {ActivityIndicator} from 'react-native-paper';
 
-const LoginScreen = ({ navigation }: { navigation: any }) => {
+const LoginScreen = ({navigation}: {navigation: any}) => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  // const [password, setPassword] = useState('1234567');
-  const [width] = useState(new Animated.Value(50)); // Initial width
-  const [opacity] = useState(new Animated.Value(1)); // Initial opacity
+
+  const [width] = useState(new Animated.Value(50));
+
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const {
@@ -34,41 +36,8 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
     loginResult,
   } = useLogin();
 
-  console.log('Login Result:', loginResult);
-  const handlePressIn = () => {
-    console.log(CustomerCode, UserName, Password);
-    Animated.parallel([
-      Animated.timing(width, {
-        toValue: 300, // Expanded width
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(opacity, {
-        toValue: 0, // Hide text
-        duration: 10,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.parallel([
-      Animated.timing(width, {
-        toValue: 50, // Original width
-        duration: 500,
-        useNativeDriver: false,
-      }),
-      Animated.timing(opacity, {
-        toValue: 1, // Show text
-        duration: 1500,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  };
-
   const {Colors} = useTheme();
-  console.log('Current theme:');
-  // console.log('User logged in:', user);
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -146,23 +115,23 @@ const LoginScreen = ({ navigation }: { navigation: any }) => {
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.buttonContainer}>
-          <Pressable
+          <TouchableOpacity
             onPress={() => handleLogin(navigation)}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
             style={styles.button}>
             <Animated.View style={[styles.animatedView, {width}]}>
-              <MaterialCommunityIcons
-                name="arrow-right-thin"
-                size={24}
-                color="#fff"
-              />
+              {loginResult.isLoading ? (
+                <ActivityIndicator color="#fff" size={'small'} />
+              ) : (
+                <MaterialCommunityIcons
+                  name="arrow-right-thin"
+                  size={24}
+                  color="#fff"
+                />
+              )}
             </Animated.View>
-            <Animated.Text style={[styles.text, {opacity}]}>
-              {' '}
-              slide to procced
-            </Animated.Text>
-          </Pressable>
+
+            <Text style={styles.text}>Login</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -270,7 +239,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     zIndex: 20,
-    marginLeft: 50,
+    marginLeft: 10,
   },
 });
 

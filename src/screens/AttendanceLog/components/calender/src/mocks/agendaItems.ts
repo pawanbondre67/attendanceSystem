@@ -1,154 +1,126 @@
 import isEmpty from 'lodash/isEmpty';
 import {MarkedDates} from '../../../src/types';
 
-const today = new Date().toISOString().split('T')[0];
-const fastDate = getPastDate(3);
-const futureDates = getFutureDates(12);
-const dates = [fastDate, today].concat(futureDates);
+// const today = new Date().toISOString().split('T')[0];
+// const fastDate = getPastDate(3);
+// const futureDates = getFutureDates(12);
+// const dates = [fastDate, today].concat(futureDates);
 
-function getFutureDates(numberOfDays: number) {
-  const array: string[] = [];
-  for (let index = 1; index <= numberOfDays; index++) {
-    let d = Date.now();
-    if (index > 8) {
-      // set dates on the next month
-      const newMonth = new Date(d).getMonth() + 1;
-      d = new Date(d).setMonth(newMonth);
-    }
-    const date = new Date(d + 864e5 * index); // 864e5 == 86400000 == 24*60*60*1000
-    const dateString = date.toISOString().split('T')[0];
-    array.push(dateString);
-  }
-  return array;
-}
-function getPastDate(numberOfDays: number) {
-  return new Date(Date.now() - 864e5 * numberOfDays).toISOString().split('T')[0];
-}
+// function getFutureDates(numberOfDays: number) {
+//   const array: string[] = [];
+//   for (let index = 1; index <= numberOfDays; index++) {
+//     let d = Date.now();
+//     if (index > 8) {
+//       // set dates on the next month
+//       const newMonth = new Date(d).getMonth() + 1;
+//       d = new Date(d).setMonth(newMonth);
+//     }
+//     const date = new Date(d + 864e5 * index); // 864e5 == 86400000 == 24*60*60*1000
+//     const dateString = date.toISOString().split('T')[0];
+//     array.push(dateString);
+//   }
+//   return array;
+// }
+// function getPastDate(numberOfDays: number) {
+//   return new Date(Date.now() - 864e5 * numberOfDays).toISOString().split('T')[0];
+// }
 
 export const agendaItems = [
   {
-    title: dates[0],
+    title: '2025-02-18',
     data: [
       {
-        hour: '10am',
-        duration: '1h',
-        title: 'Account Meeting',
-        status: 'Offline',
-        participants: ['PP', 'MP', 'NT', '3+'],
-        organizer: 'SB',
+       inTime: '09:00',
+        outTime: '18:00',
+      },
+      {
+        inTime: '02:00',
+        outTime: '03:00',
       },
     ],
   },
   {
-    title: dates[1],
+    title: '2025-02-19',
     data: [
       {
-        hour: '11am',
-        duration: '1h',
-        title: 'Team Sync',
-        status: 'Online',
-        participants: ['AB', 'CD', 'EF', '3+'],
-        organizer: 'JK',
+        inTime: null,
+        outTime: null,
       },
     ],
   },
   {
-    title: dates[2],
+    title: '2025-02-20',
     data: [
       {
-        hour: '2pm',
-        duration: '1h',
-        title: 'Project Planning',
-        status: 'Offline',
-        participants: ['XY', 'YZ', 'LM', '2+'],
-        organizer: 'GH',
-      },
-      {
-        hour: '4pm',
-        duration: '1h',
-        title: 'Strategy Session',
-        status: 'Online',
-        participants: ['RS', 'OP', 'QR'],
-        organizer: 'MN',
+        inTime: '09:00',
+        outTime: '18:00',
       },
     ],
   },
   {
-    title: dates[3],
+    title: '2025-02-21',
     data: [
       {
-        hour: '10am',
-        duration: '1h',
-        title: 'Weekly Update',
-        status: 'Offline',
-        participants: ['PP', 'MP', 'NT', '3+'],
-        organizer: 'SB',
+        inTime: '09:00',
+        outTime: '18:00',
       },
     ],
   },
   {
-    title: dates[4],
-    data: [],
-  },
-  {
-    title: dates[5],
+    title: '2025-02-22',
     data: [
       {
-        hour: '9am',
-        duration: '1h',
-        title: 'Performance Review',
-        status: 'Online',
-        participants: ['PQ', 'RS', 'LM'],
-        organizer: 'UV',
-      },
-      {
-        hour: '10am',
-        duration: '1h',
-        title: 'Account Wrap-Up',
-        status: 'Offline',
-        participants: ['XY', 'AB', 'EF', '3+'],
-        organizer: 'JK',
+        inTime: '09:00',
+        outTime: '18:00',
       },
     ],
   },
   {
-    title: dates[6],
+    title: '2025-02-23',
     data: [
       {
-        hour: '1pm',
-        duration: '1h',
-        title: 'Brainstorming',
-        status: 'Online',
-        participants: ['KL', 'QR', 'OP'],
-        organizer: 'GH',
+        inTime: '09:00',
+        outTime: '18:00',
       },
     ],
   },
   {
-    title: dates[7],
-    data: [],
-  },
-  {
-    title: dates[8],
+    title: '2025-02-24',
     data: [
       {
-        hour: '3pm',
-        duration: '1h',
-        title: 'Client Presentation',
-        status: 'Offline',
-        participants: ['MN', 'YZ', 'XY', '2+'],
-        organizer: 'RS',
-      },
-      {
-        hour: '5pm',
-        duration: '1h',
-        title: 'Feedback Session',
-        status: 'Online',
-        participants: ['KL', 'PQ'],
-        organizer: 'UV',
+        inTime: '09:00',
+        outTime: '18:00',
       },
     ],
   },
+  {
+    title: '2025-02-25',
+    data: [
+      {
+        inTime: '09:00',
+        outTime: '18:00',
+      },
+    ],
+  },
+  {
+    title: '2025-02-26',
+    data: [
+      {
+        inTime: '09:00',
+        outTime: '18:00',
+      },
+    ],
+  },
+  {
+    title: '2025-02-27',
+    data: [
+      {
+        inTime: '09:00',
+        outTime: '18:00',
+      },
+    ],
+  },
+
 ];
 
 

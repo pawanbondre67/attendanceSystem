@@ -3,6 +3,7 @@ import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 import {isIos} from '../helper/utility';
 import {useNavigation} from '@react-navigation/native';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const useLocation = () => {
   const [currentLongitude, setCurrentLongitude] = useState<number | null>(null);
@@ -19,10 +20,17 @@ const useLocation = () => {
     const requestLocationPermission = async () => {
  
       if (Platform.OS === 'ios') {
-        // For iOS, get location and subscribe to location updates
-
-        getOneTimeLocation();
-        // subscribeLocationLocation();
+        // For iOS, request location permission
+        const result = await request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE);
+        if (result === RESULTS.GRANTED) {
+          // If permission is granted, get location and subscribe to location updates
+          getOneTimeLocation();
+          // subscribeLocationLocation();
+        } else {
+          // If permission is denied, set status and prompt user to enable location settings
+          setLocationStatus('Permission Denied');
+          // Alert.alert('Location Permission', 'Please enable location services in settings.');
+        }
       } else {
         try {
           // For Android, request location permission

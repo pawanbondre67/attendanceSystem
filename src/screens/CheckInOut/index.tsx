@@ -18,30 +18,27 @@ import ImageResizer from '@bam.tech/react-native-image-resizer';
 import {isIos} from '../../helper/utility';
 import useLocation from '../../helper/location';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
-import { useAppDispatch } from '../../redux/hook/hook';
-import { setSnackMessage } from '../../redux/slices/snackbarSlice';
-type Props = {
-
-};
+import {useAppDispatch} from '../../redux/hook/hook';
+import {setSnackMessage} from '../../redux/slices/snackbarSlice';
+type Props = {};
 const CheckInOut = ({navigation}: Props) => {
-  // Set header options
-  navigation.setOptions({
-    // eslint-disable-next-line react/no-unstable-nested-components
-    headerRight: () =>
-      isFetchingLocation ? (
-        <ActivityIndicator size="small" color="#fff" />
-      ) : (
-        <FontAwesome6 name="location-crosshairs" size={22} color="#fff" />
-      ),
-  });
-
   const {currentLatitude, currentLongitude, isFetchingLocation} = useLocation();
-  const {
-    onSubmit,
-    markAttendanceResult,
-    checkOutResult,
-    onPhotoCapture,
-  } = useCheckInOut({currentLatitude, currentLongitude});
+
+  useEffect(() => {
+    // Set header options
+    navigation.setOptions({
+      // eslint-disable-next-line react/no-unstable-nested-components
+      headerRight: () =>
+        isFetchingLocation ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <FontAwesome6 name="location-crosshairs" size={22} color="#fff" />
+        ),
+    });
+  }, [navigation, isFetchingLocation]);
+
+  const {onSubmit, markAttendanceResult, checkOutResult, onPhotoCapture} =
+    useCheckInOut({currentLatitude, currentLongitude});
   const device = useCameraDevice('front');
 
   const cameraRef = useRef<Camera>(null);
@@ -55,7 +52,6 @@ const CheckInOut = ({navigation}: Props) => {
   }, []);
 
   const dispatch = useAppDispatch();
-
 
   const checkCameraPermission = async () => {
     if (Platform.OS === 'android') {
@@ -197,10 +193,9 @@ const CheckInOut = ({navigation}: Props) => {
           )}
         </TouchableOpacity>
         <Text style={styles.note}>Make sure to upload a clear face selfie</Text>
-
       </View>
 
-      <View style={{width: '100%' , marginTop:50,}}>
+      <View style={{width: '100%', marginTop: 50}}>
         {showCamera ? (
           <Button
             mode="outlined"
@@ -209,16 +204,20 @@ const CheckInOut = ({navigation}: Props) => {
             style={styles.button}>
             Take A Photo
           </Button>
-        ) :  (
+        ) : (
           <Button
             mode="outlined"
             onPress={onSubmit}
             disabled={isFetchingLocation}
             textColor="#fff"
             style={styles.button}>
-            Mark Attendance {markAttendanceResult?.isLoading || checkOutResult.isLoading  &&  <ActivityIndicator size="small" color="#fff" />}
+            Mark Attendance{' '}
+            {markAttendanceResult?.isLoading ||
+              (checkOutResult.isLoading && (
+                <ActivityIndicator size="small" color="#fff" />
+              ))}
           </Button>
-        ) }
+        )}
       </View>
     </View>
   );
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
     padding: 20,
     flexDirection: 'column',
     alignItems: 'center',
-   justifyContent: 'center',
+    justifyContent: 'center',
   },
   imageContainer: {
     // marginTop: '10%',

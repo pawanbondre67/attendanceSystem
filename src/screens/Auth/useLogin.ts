@@ -28,9 +28,9 @@ export interface CustomerData extends Errors {}
 const useLogin = () => {
   // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [customerData, setCustomerData] = useState<CustomerData>({
-    CustomerCode: 'OTD1000',
-    UserName: 'Shivani',
-    Password: '12',
+    CustomerCode: '',
+    UserName: '',
+    Password: '',
     EmployeeId: '',
   });
   const [errors, setErrors] = useState<Errors>({

@@ -41,14 +41,10 @@
 		</dict>
 		<key>NSCameraUsageDescription</key>
 		<string>$(PRODUCT_NAME) needs access to your Camera.</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>We need your location to provide better service and personalized experience.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>We need your location to provide better service and personalized experience.</string>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-		</array>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>We need your location to provide better service and personalized experience.</string>
 		<key>UIAppFonts</key>
 		<array>
 			<string>AntDesign.ttf</string>
@@ -80,8 +76,11 @@
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UISupportedInterfaceOrientations~ipad</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		</array>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false />

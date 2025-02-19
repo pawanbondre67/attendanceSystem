@@ -212,10 +212,9 @@ const CheckInOut = ({navigation}: Props) => {
             textColor="#fff"
             style={styles.button}>
             Mark Attendance{' '}
-            {markAttendanceResult?.isLoading ||
-              (checkOutResult.isLoading && (
-                <ActivityIndicator size="small" color="#fff" />
-              ))}
+            {(markAttendanceResult?.isLoading || checkOutResult.isLoading) && (
+              <ActivityIndicator size="small" color="#fff" />
+            )}
           </Button>
         )}
       </View>
@@ -283,6 +282,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 20,
     backgroundColor: '#578FCA',
     width: '100%',

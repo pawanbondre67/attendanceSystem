@@ -39,7 +39,10 @@ interface RouteParams {
 }
 type CheckInOutRouteProp = RouteProp<{params: RouteParams}, 'params'>;
 
-const useCheckInOut = ({currentLatitude,currentLongitude} : {
+const useCheckInOut = ({
+  currentLatitude,
+  currentLongitude,
+}: {
   currentLatitude: number | null;
   currentLongitude: number | null;
 }) => {
@@ -53,10 +56,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     state => state.attendance,
   );
 
-
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
   // const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
   // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
+  console.log('markAttendanceResult', markAttendanceResult);
 
   const [checkOut, checkOutResult] = useCheckOutMutation();
   const route = useRoute<CheckInOutRouteProp>();
@@ -91,14 +94,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     checkInOutData.longitude,
   ]);
 
-  // // console.log('checkout result data', checkOutResult);
-  // console.log('after marking attendance resp data', markAttendanceResult);
-  // // console.log('currentLong', currentLongitude);
-  // // console.log('currentLat inside hook', currentLatitude);
-  // console.log('checkInOutData chi image', checkInOutData);
-
   const {currentTime, currentDate, currentTime12} = formatDate();
-  const {employeeId, employeeDetailsState} = useAppSelector(state => state.employee);
+  const {employeeId, employeeDetailsState} = useAppSelector(
+    state => state.employee,
+  );
 
   const generateCheckinOutPayload = async () => {
     try {
@@ -121,7 +120,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
 
       if (currentLatitude === null || currentLongitude === null) {
         // throw new Error('Location not fetched');
-        return dispatch(setSnackMessage('Location not fetched'));
+        return dispatch(setSnackMessage({
+          message: 'Location not fetched, please try again',
+          severity: 'warning',
+        }));
       }
       const payload: any = {
         status: status === 'checkin' ? 'in' : 'inout',
@@ -151,9 +153,9 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
       } else if (status === 'checkout') {
         payload.outDate = currentDate;
         payload.outTime = currentTime;
-        payload.outLat =  currentLatitude
-        ? currentLatitude
-        : checkInOutData.latitude;
+        payload.outLat = currentLatitude
+          ? currentLatitude
+          : checkInOutData.latitude;
         payload.outLong = currentLongitude
           ? currentLongitude
           : checkInOutData.longitude;
@@ -171,9 +173,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
       return payload;
     } catch (err) {
       dispatch(
-        setSnackMessage(
-          'Error generating payload , please refresh location again',
-        ),
+        setSnackMessage({
+          message: 'Error generating payload , please refresh location again',
+          severity: 'error',
+        }),
       );
       throw err;
     }
@@ -189,7 +192,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
         status: 'in',
         checkInTime: currentTime12,
       };
-      dispatch(setSnackMessage(markAttendanceResult.data.message));
+      dispatch(setSnackMessage({
+        message: 'Attendance marked successfully',
+        severity: 'success',
+      }));
       dispatch(setAttendanceData(updatedAttendanceData));
       storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
@@ -201,11 +207,17 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
     }
 
     if (markAttendanceResult?.isError && markAttendanceResult?.error) {
-      // dispatch(setSnackMessage( markAttendanceResult.error.message,));
-      console.error(
-        'Error marking attendance:',
-        markAttendanceResult.error,
-      );
+      if (markAttendanceResult.error.status === 500) {
+        dispatch(setSnackMessage({
+          message: 'Internal Server Error',
+          severity: 'error',
+        }));
+      } else {
+        dispatch(setSnackMessage({
+          message: markAttendanceResult.error.data.message,
+          severity: 'error',
+        }));
+      }
     }
     if (checkOutResult?.isSuccess && checkOutResult?.data?.message) {
       const updatedAttendanceData = {
@@ -215,7 +227,10 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
       };
 
       dispatch(setAttendanceData(updatedAttendanceData));
-      dispatch(setSnackMessage(checkOutResult.data.message));
+      dispatch(setSnackMessage({
+        message: 'Attendance marked successfully',
+        severity: 'success',
+      }));
       storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
         CommonActions.reset({
@@ -223,11 +238,19 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
           routes: [{name: 'homeTab'}],
         }),
       );
-      dispatch(setSnackMessage(checkOutResult.data.message));
     }
-    if (checkOutResult?.isError && checkOutResult?.error?.message) {
-      // dispatch(setSnackMessage(checkOutResult.error.message));
-      console.error('Error checking out:', checkOutResult.error.message);
+    if (checkOutResult?.isError && checkOutResult?.error) {
+      if (checkOutResult.error.status === 500) {
+        dispatch(setSnackMessage({
+          message: 'Internal Server Error',
+          severity: 'error',
+        }));
+      } else {
+        dispatch(setSnackMessage({
+          message: checkOutResult.error.data.message,
+          severity: 'error',
+        }));
+      }
     }
   }, [markAttendanceResult, checkOutResult]);
 
@@ -325,10 +348,16 @@ const useCheckInOut = ({currentLatitude,currentLongitude} : {
           const status = btnLabel.toLowerCase();
           if (status === 'checkin') {
             markAttendance(payload);
-            dispatch(setSnackMessage('Attendance marked successfully'));
+            dispatch(setSnackMessage({
+              message: 'Attendance marked successfully',
+              severity: 'success',
+            }));
           } else if (status === 'checkout') {
             checkOut(payload);
-            dispatch(setSnackMessage('Attendance marked successfully'));
+            dispatch(setSnackMessage({
+              message: 'Attendance marked successfully',
+              severity: 'success',
+            }));
           }
         } else {
           // If not connected, hit SQL request

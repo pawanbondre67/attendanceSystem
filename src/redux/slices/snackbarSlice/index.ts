@@ -5,6 +5,7 @@ import {SnackBarState} from './types';
 const initialState: SnackBarState = {
   visible: false,
   message: '',
+  severity: 'info',
 };
 
 export const snackBarSlice = createSlice({
@@ -17,9 +18,10 @@ export const snackBarSlice = createSlice({
     toggleSnackBarVisibility: state => {
       state.visible = !state.visible;
     },
-    setSnackMessage: (state, action: PayloadAction<string>) => {
-      state.visible = true;
-      state.message = action.payload;
+    setSnackMessage: (state, action: PayloadAction<{ message: string; severity: SnackBarState['severity'] }>) => {
+       state.visible = true;
+      state.message = action.payload.message;
+      state.severity = action.payload.severity;
     },
   },
 });

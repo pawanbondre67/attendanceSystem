@@ -38,9 +38,45 @@ const HomeScreen = ({navigation}: any) => {
 
   const [dialogVisible, setDialogVisible] = useState(false);
 
+  // const [TotalHours, setTotalHours] = useState({hours: 0, minutes: 0});
+
   const showDialog = () => setDialogVisible(true);
   const hideDialog = () => setDialogVisible(false);
   const insets = useSafeAreaInsets();
+
+  // const calculateTimeDifference = async () => {
+  //   try {
+  //     if (attendanceData) {
+  //       const {checkInTime, checkOutTime} = attendanceData;
+
+  //       if (checkInTime && checkOutTime) {
+  //         const inTimeDate = new Date(checkInTime);
+  //         const outTimeDate = new Date(checkOutTime);
+
+  //         const timeDifference = outTimeDate.getTime() - inTimeDate.getTime();
+  //         const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+  //         const minutes = Math.floor(
+  //           (timeDifference % (1000 * 60 * 60)) / (1000 * 60),
+  //         );
+
+  //         setTotalHours({hours, minutes});
+
+  //         console.log('Hours:', hours, 'Minutes:', minutes  );
+  //       } else {
+  //         throw new Error('inTime or outTime is missing in checkInOutData');
+  //       }
+  //     } else {
+  //       throw new Error('No checkInOutData found in local storage');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error calculating time difference:', error);
+  //     return null;
+  //   }
+  // };
+
+  // useEffect(()=>{
+  //   calculateTimeDifference();
+  // } , []);
 
   return (
     <View
@@ -81,14 +117,6 @@ const HomeScreen = ({navigation}: any) => {
         />
 
         <Clock />
-
-        {/* <View style={styles.location}>
-          <Text>Latitude: {currentLatitude}</Text>
-          <Text>Longitude: {currentLongitude}</Text>
-
-          <Button title="Refresh Location" onPress={getOneTimeLocation} />
-          {isFetchingLocation && <Text>Fetching location...</Text>}
-        </View> */}
 
         {/* Punch In Button */}
         <View style={styles.btncontainer}>
@@ -143,7 +171,7 @@ const HomeScreen = ({navigation}: any) => {
           </View>
           <View style={styles.punchItem}>
             <Icon name="timer" size={24} color="#ff0000" />
-            <Text style={styles.punchText}>08:13</Text>
+            <Text style={styles.punchText}>00:00</Text>
             <Text style={styles.punchLabel}>Total Hours</Text>
           </View>
         </View>

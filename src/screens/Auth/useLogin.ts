@@ -81,7 +81,6 @@ const useLogin = () => {
   //   }
   // };
 
-
   const handleLogin = async (navigation: any) => {
     const validationErrors = checkValidation(customerData);
     if (validationErrors) {
@@ -101,7 +100,10 @@ const useLogin = () => {
           } else if ((err as any)?.status === 500) {
             errormessage = 'Server returned with status code 500';
           }
-          dispatch(setSnackMessage(errormessage));
+          dispatch(setSnackMessage({
+            message: errormessage,
+            severity: 'error',
+          }));
           // console.error('Login Error:', errormessage);
         }
 
@@ -110,7 +112,7 @@ const useLogin = () => {
           dispatch(setEmployeeDetailsState(customerData));
           await saveEmployeeDetailsToLocal(customerData);
 
-          navigation.navigate(
+          navigation.replace(
             response.data.isAppRegisterMandatory
               ? 'cameraAuthScreen'
               : 'mainTabNavigator',
@@ -118,7 +120,12 @@ const useLogin = () => {
         }
       } catch (error: any) {
         console.error('Login Failed:', error);
-        dispatch(setSnackMessage('Error while logging in'));
+        dispatch(
+          setSnackMessage({
+            message: 'Error while logging in',
+            severity: 'error',
+          }),
+        );
       }
     }
   };

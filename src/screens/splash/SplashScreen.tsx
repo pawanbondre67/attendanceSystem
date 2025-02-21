@@ -56,11 +56,16 @@ const SplashScreen = ({navigation}: any) => {
       const response = await loginUser(details, false).unwrap();
       dispatch(setEmployeeId(response?.data?.employeeId.toString()));
       dispatch(setEmployeeDetailsState(details));
-      if(response?.data?.isAppRegisterMandatory){
+      if (response?.data?.isAppRegisterMandatory) {
         navigation.replace('cameraAuthScreen');
       }
     } catch (error) {
-      dispatch(setSnackMessage('Login To get Started'));
+      dispatch(
+        setSnackMessage({
+          message: 'Login To get Started',
+          severity: 'info',
+        }),
+      );
     }
   };
 

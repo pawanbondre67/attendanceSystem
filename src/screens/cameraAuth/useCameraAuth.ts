@@ -265,21 +265,35 @@ const useCameraAuth = () => {
               !isLoading && !error
                 ? navigation.replace('mainTabNavigator', { screen: 'homeTab' })
                 : null;
-              dispatch(setSnackMessage('Registration completed successfully'));
+              dispatch(setSnackMessage({
+                message: 'Registration successful',
+                severity: 'success',
+              }));
             } catch (apiError) {
               console.error('API Error:', apiError);
               if ((apiError as Error).message === 'Network request failed') {
+                dispatch(setSnackMessage({
+                  message: 'Network request failed. Please check your internet connection.',
+                  severity: 'error',
+                }));
                 console.error(
                   'Network request failed. Please check your internet connection.',
                 );
               }
             }
           } else {
-            dispatch(setSnackMessage(error));
+            dispatch(setSnackMessage({
+              message: error?.data.message || 'Network request failed',
+              severity: 'error',
+            }));
             console.log('register Payload  &&  error', payload, error);
           }
         });
       } catch (err) {
+        dispatch(setSnackMessage({
+          message: 'Error submitting images',
+          severity: 'error',
+        }));
         console.error('Error submitting images:', err);
       }
     }

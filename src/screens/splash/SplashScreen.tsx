@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useLatestStatusQuery} from '../../redux/services/attendance/attendanceApiSlice';
 import {useLazyLoginQuery} from '../../redux/services/auth/login/LoginApiSlice';
@@ -14,15 +13,10 @@ import LottieView from 'lottie-react-native';
 import useLocation from '../../helper/location';
 import {ActivityIndicator} from 'react-native-paper';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
-
-interface EmployeeDetails {
-  CustomerCode: string;
-  UserName: string;
-  Password: string;
-}
+import { EmployeeDetails } from '../../types/types';
+import useLocalStorage from '../home/useLocalStorage';
 
 const SplashScreen = ({navigation}: any) => {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [isInitialized, setIsInitialized] = useState(false);
   const dispatch = useAppDispatch();
   const {getOneTimeLocation, isFetchingLocation} = useLocation();
@@ -30,26 +24,14 @@ const SplashScreen = ({navigation}: any) => {
     state => state.attendance,
   );
 
-  const [employeeDetails, setEmployeeDetail] = useState<EmployeeDetails | null>(
-    null,
-  );
-  const {data: latestStatusData, isLoading: isLatestStatusLoading} =
-    useLatestStatusQuery();
+  const {employeeDetails} = useLocalStorage({navigation});
+  const {
+    data: latestStatusData,
+    isLoading: isLatestStatusLoading,
+    error: latestStatusError,
+  } = useLatestStatusQuery({CustomerCode: employeeDetails?.CustomerCode || ''});
   const [loginUser] = useLazyLoginQuery();
 
-  const getEmployeeDetailsFromLocal =
-    async (): Promise<EmployeeDetails | null> => {
-      try {
-        const jsonValue = await AsyncStorage.getItem('employeeDetails');
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
-      } catch (error) {
-        console.error(
-          'Failed to retrieve employee details from local storage',
-          error,
-        );
-        return null;
-      }
-    };
 
   const checkUserLoggedIn = async (details: EmployeeDetails) => {
     try {
@@ -69,36 +51,31 @@ const SplashScreen = ({navigation}: any) => {
     }
   };
 
+  // Initialize the app
   useEffect(() => {
+
     const initialize = async () => {
-      // Fetch employee details from local storage
-      const details = await getEmployeeDetailsFromLocal();
 
-      // Only update state if details are different
-      if (
-        details &&
-        JSON.stringify(details) !== JSON.stringify(employeeDetails)
-      ) {
-        setEmployeeDetail(details);
+      if (employeeDetails) {
+        console.log('logi----->' , employeeDetails);
+        await checkUserLoggedIn(employeeDetails);
       }
 
-      // Check if user is logged in
-      if (details) {
-        await checkUserLoggedIn(details);
-      }
-      getOneTimeLocation();
+      // Fetch location
+      await getOneTimeLocation();
       setIsInitialized(true);
     };
 
     initialize();
   }, []);
 
+  // Handle latest status data
   useEffect(() => {
-    if (
-      latestStatusData?.data?.status &&
-      !isLatestStatusLoading &&
-      latestStatusData?.data?.status !== attendanceData.status // ✅ Avoid redundant updates
-    ) {
+    if (latestStatusError) {
+      console.error('Error fetching latest status:', latestStatusError);
+    }
+
+    if (!isLatestStatusLoading && latestStatusData?.data?.status) {
       console.log('attendanceData after fetching', latestStatusData);
       dispatch(
         setAttendanceData({
@@ -107,10 +84,17 @@ const SplashScreen = ({navigation}: any) => {
         }),
       );
     }
-  }, [latestStatusData, dispatch, isLatestStatusLoading, attendanceData]);
+  }, [
+    latestStatusData,
+    isLatestStatusLoading,
+    latestStatusError,
+    dispatch,
+    attendanceData,
+  ]);
 
   useEffect(() => {
-    if (!isInitialized || isLatestStatusLoading) {
+    
+    if (isLatestStatusLoading || !isInitialized) {
       return;
     }
 

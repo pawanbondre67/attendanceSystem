@@ -6,6 +6,21 @@ export interface User {
   password?: string;
 }
 
+export  interface EmployeeDetails {
+  CustomerCode: string;
+  UserName: string;
+  Password: string;
+}
+
+export interface EmployeeDetailsforlocal {
+  CustomerCode: string;
+  UserName: string;
+  Password: string;
+  ProfilePic?: string;
+  EmployeeId?: string;
+}
+
+
 export type AppStackParamList = {
   splashScreen: undefined;
   mainTabNavigator: {

@@ -22,7 +22,12 @@ import {useAppDispatch} from '../../redux/hook/hook';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 type Props = {};
 const CheckInOut = ({navigation}: Props) => {
-  const {currentLatitude, currentLongitude, isFetchingLocation , getOneTimeLocation} = useLocation();
+  const {
+    currentLatitude,
+    currentLongitude,
+    isFetchingLocation,
+    getOneTimeLocation,
+  } = useLocation();
 
   useEffect(() => {
     // Set header options
@@ -32,7 +37,12 @@ const CheckInOut = ({navigation}: Props) => {
         isFetchingLocation ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
-          <FontAwesome6 name="location-crosshairs" size={22} color="#fff" onPress={getOneTimeLocation} />
+          <FontAwesome6
+            name="location-crosshairs"
+            size={22}
+            color="#fff"
+            onPress={getOneTimeLocation}
+          />
         ),
     });
   }, [navigation, isFetchingLocation]);
@@ -47,13 +57,10 @@ const CheckInOut = ({navigation}: Props) => {
   const [isCameraReady, setIsCameraReady] = useState(false);
 
   useEffect(() => {
-    if (isIos) {
-      capturedImage &&
-        setTimeout(async () => {
-          await onSubmit(); // Call the function after 2 seconds for iOS only
-          console.log('Calling onSubmit after 1 seconds');
-        }, 100);
-    }
+    capturedImage &&
+      setTimeout(async () => {
+        await onSubmit();
+      }, 100);
   }, [capturedImage]);
 
   useEffect(() => {
@@ -72,10 +79,12 @@ const CheckInOut = ({navigation}: Props) => {
           setIsCameraReady(true); // Update state to indicate camera is ready
         } else {
           console.log('Camera permission denied');
-          dispatch(setSnackMessage({
-            message: 'Camera permission denied',
-            severity: 'error',
-          }));
+          dispatch(
+            setSnackMessage({
+              message: 'Camera permission denied',
+              severity: 'error',
+            }),
+          );
           // Handle permission denial (e.g., show a message or disable camera features)
         }
       } catch (err) {
@@ -89,17 +98,21 @@ const CheckInOut = ({navigation}: Props) => {
           setIsCameraReady(true); // Update state to indicate camera is ready
         } else {
           // console.log('Camera permission denied');
-          dispatch(setSnackMessage({
-            message: 'Camera permission denied',
-            severity: 'error',
-          }));
+          dispatch(
+            setSnackMessage({
+              message: 'Camera permission denied',
+              severity: 'error',
+            }),
+          );
           // Handle permission denial (e.g., show a message or disable camera features)
         }
       } catch (err) {
-        dispatch(setSnackMessage({
-          message: 'Failed to request camera permission',
-          severity: 'error',
-        }));
+        dispatch(
+          setSnackMessage({
+            message: 'Failed to request camera permission',
+            severity: 'error',
+          }),
+        );
         console.warn(err);
       }
     }
@@ -175,63 +188,25 @@ const CheckInOut = ({navigation}: Props) => {
     );
   };
 
-  console.log('currentLatitude in checkout page', currentLatitude);
-
   return (
-    // checkInOutData.showCamera ? (
-    //   <CaptureImage onPhotoCapture={onPhotoCapture} />
-    // ) : (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        {isIos ? (
-          <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
-            <Image
-              source={require('../../assets/face-outline.png')}
-              style={styles.faceOutline}
-              resizeMethod="auto"
-            />
-            <Camera
-              style={StyleSheet.absoluteFill}
-              ref={cameraRef}
-              device={device}
-              preview={true}
-              isActive={true}
-              outputOrientation="device"
-              photo={true}
-            />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
-            {capturedImage ? (
-              // <Image source={{uri: captu redImage}} style={styles.image} />
-
-              <Image
-                source={{uri: capturedImage}}
-                style={styles.faceOutline}
-                resizeMethod="auto"
-              />
-            ) : showCamera ? (
-              <>
-                <Image
-                  source={require('../../assets/face-outline.png')}
-                  style={styles.faceOutline}
-                  resizeMethod="auto"
-                />
-                <Camera
-                  style={StyleSheet.absoluteFill}
-                  ref={cameraRef}
-                  device={device}
-                  preview={true}
-                  isActive={true}
-                  outputOrientation="device"
-                  photo={true}
-                />
-              </>
-            ) : (
-              <Text style={styles.placeholderText}>Take a photo</Text>
-            )}
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
+          <Image
+            source={require('../../assets/face-outline.png')}
+            style={styles.faceOutline}
+            resizeMethod="auto"
+          />
+          <Camera
+            style={StyleSheet.absoluteFill}
+            ref={cameraRef}
+            device={device}
+            preview={true}
+            isActive={true}
+            outputOrientation="device"
+            photo={true}
+          />
+        </TouchableOpacity>
         <Text style={styles.note}>Make sure to upload a clear face selfie</Text>
       </View>
 
@@ -240,19 +215,15 @@ const CheckInOut = ({navigation}: Props) => {
           <Button
             mode="outlined"
             textColor="#fff"
+            disabled={isFetchingLocation}
             onPress={takePhoto}
             style={styles.button}>
-            {!isIos ? (
-              ' Take A Photo '
-            ) : (
-              <View style={styles.buttonContent}>
-                <Text style={styles.buttonText}>Mark Attendance</Text>
-                {(markAttendanceResult.isLoading ||
-                  checkOutResult.isLoading) && (
-                  <ActivityIndicator size="small" color="#fff" />
-                )}
-              </View>
-            )}
+            <View style={styles.buttonContent}>
+              <Text style={styles.buttonText}>Mark Attendance</Text>
+              {/* {(markAttendanceResult.isLoading || checkOutResult.isLoading) && (
+                <ActivityIndicator size="small" color="#fff" />
+              )} */}
+            </View>
           </Button>
         ) : (
           <Button

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -12,71 +12,49 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useAppSelector} from '../../redux/hook/hook';
 
 import Clock from '../../components/Clock';
-import useLocation from '../../helper/location';
+
 import useLocalStorage from './useLocalStorage';
 
 import LogoutDialog from '../../components/Dialog';
 import {isIos} from '../../helper/utility';
+import { useLatestStatusQuery } from '../../redux/services/attendance/attendanceApiSlice';
+import { useLazyLoginQuery } from '../../redux/services/auth/login/LoginApiSlice';
 const HomeScreen = ({navigation}: any) => {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  // const {Colors, dark} = useTheme();
 
-  const {
-    currentLatitude,
-    // currentLongitude,
-    // getOneTimeLocation,
-    // isFetchingLocation,
-  } = useLocation();
-  console.log('currentLatitude at home screen', currentLatitude);
-  // const {status , checkInTime ,checkOutTime} = useAppSelector(state => state.attendance.CheckInOutData);
+
+
   const {employeeId} = useAppSelector(state => state.employee);
-  // console.log('status returing from globsl state', status);
 
-  const {employeeDetails, attendanceData} = useLocalStorage({
+
+  const {employeeDetails, attendanceData } = useLocalStorage({
     navigation,
   });
 
+  const {status, checkInTime, checkOutTime} = useAppSelector(
+    state => state.attendance.CheckInOutData,
+  );
+  const {employeeDetailsState} = useAppSelector(state => state.employee);
+// Fetch latest status
+const { error : latestStatusDataError} = useLatestStatusQuery({
+  CustomerCode: employeeDetailsState?.CustomerCode || '',
+});
+const [loginUser] = useLazyLoginQuery();
+
+useEffect(() => {
+  if(latestStatusDataError){
+    console.log('error', latestStatusDataError);
+    loginUser(employeeDetailsState, false);
+  }
+}, [latestStatusDataError]);
+
+  console.log('status', status);
+
   const [dialogVisible, setDialogVisible] = useState(false);
 
-  // const [TotalHours, setTotalHours] = useState({hours: 0, minutes: 0});
 
   const showDialog = () => setDialogVisible(true);
   const hideDialog = () => setDialogVisible(false);
   const insets = useSafeAreaInsets();
-
-  // const calculateTimeDifference = async () => {
-  //   try {
-  //     if (attendanceData) {
-  //       const {checkInTime, checkOutTime} = attendanceData;
-
-  //       if (checkInTime && checkOutTime) {
-  //         const inTimeDate = new Date(checkInTime);
-  //         const outTimeDate = new Date(checkOutTime);
-
-  //         const timeDifference = outTimeDate.getTime() - inTimeDate.getTime();
-  //         const hours = Math.floor(timeDifference / (1000 * 60 * 60));
-  //         const minutes = Math.floor(
-  //           (timeDifference % (1000 * 60 * 60)) / (1000 * 60),
-  //         );
-
-  //         setTotalHours({hours, minutes});
-
-  //         console.log('Hours:', hours, 'Minutes:', minutes  );
-  //       } else {
-  //         throw new Error('inTime or outTime is missing in checkInOutData');
-  //       }
-  //     } else {
-  //       throw new Error('No checkInOutData found in local storage');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error calculating time difference:', error);
-  //     return null;
-  //   }
-  // };
-
-  // useEffect(()=>{
-  //   calculateTimeDifference();
-  // } , []);
 
   return (
     <View
@@ -120,7 +98,7 @@ const HomeScreen = ({navigation}: any) => {
 
         {/* Punch In Button */}
         <View style={styles.btncontainer}>
-          {attendanceData?.status === 'in' ? (
+          {status === 'in' ? (
             <View style={styles.outerCircle}>
               <TouchableOpacity
                 style={styles.button}
@@ -154,20 +132,16 @@ const HomeScreen = ({navigation}: any) => {
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
             <Text style={styles.punchText}>
-              {attendanceData?.checkInTime
-                ? attendanceData?.checkInTime
-                : '00:00'}
+              {checkInTime || attendanceData?.checkInTime || '00:00'}
             </Text>
-            <Text style={styles.punchLabel}>Punch In</Text>
+            <Text style={styles.punchLabel}>Check In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
             <Text style={styles.punchText}>
-              {attendanceData?.checkOutTime
-                ? attendanceData?.checkOutTime
-                : '00:00'}
+              {checkOutTime || attendanceData?.checkOutTime || '00:00'}
             </Text>
-            <Text style={styles.punchLabel}>Punch Out</Text>
+            <Text style={styles.punchLabel}>Check Out</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="timer" size={24} color="#ff0000" />

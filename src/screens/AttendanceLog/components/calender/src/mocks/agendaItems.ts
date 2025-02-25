@@ -1,5 +1,8 @@
 import isEmpty from 'lodash/isEmpty';
 import {MarkedDates} from '../../../src/types';
+import { useAttendanceHistoryQuery } from '../../../../../../redux/services/attendance/attendanceApiSlice';
+
+
 
 // const today = new Date().toISOString().split('T')[0];
 // const fastDate = getPastDate(3);
@@ -25,17 +28,16 @@ import {MarkedDates} from '../../../src/types';
 //   return new Date(Date.now() - 864e5 * numberOfDays).toISOString().split('T')[0];
 // }
 
+const today = new Date().toISOString().split('T')[0];
+console.log('today', today);
+
 export const agendaItems = [
   {
     title: '2025-02-18',
     data: [
       {
        inTime: '09:00',
-        outTime: '18:00',
-      },
-      {
-        inTime: '02:00',
-        outTime: '03:00',
+        outTime: null,
       },
     ],
   },

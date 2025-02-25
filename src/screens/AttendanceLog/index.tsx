@@ -2,14 +2,11 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  Platform,
-  FlatList,
+
 } from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import CalendarScreen from './CalendarScreen';
-import CustomCard from './CustomCard';
+
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import ExpandableCalendarScreen from './components/calender/src/screens/expandableCalendarScreen';
 

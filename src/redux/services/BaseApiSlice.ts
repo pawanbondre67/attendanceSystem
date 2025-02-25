@@ -18,6 +18,7 @@ export const baseApi = createApi({
     'Notification',
     'checkin',
     'checkout',
+    'attendanceHistory',
   ],
   endpoints: () => ({}),
 });

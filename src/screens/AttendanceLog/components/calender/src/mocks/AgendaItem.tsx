@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 
 interface ItemProps {
@@ -8,7 +8,7 @@ interface ItemProps {
 const AgendaItem = (props: ItemProps) => {
   const {item} = props;
 
-  if (!item.inTime || !item.outTime) {
+  if (!item.inTime && !item.outTime) {
     return (
       <View style={styles.emptyItem}>
         <Text style={styles.emptyItemText}>No Data Available</Text>

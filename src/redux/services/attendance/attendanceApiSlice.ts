@@ -1,6 +1,11 @@
 import {API_TOKEN} from '@env';
 import {baseApi} from '../BaseApiSlice';
-import {CheckInPayload, CheckOutPayload, registerPayload} from './types';
+import {
+  CheckInPayload,
+  CheckOutPayload,
+  registerPayload,
+  historyPayload,
+} from './types';
 // import useLocalStorage from '../../../screens/home/useLocalStorage';
 // import { useAppSelector } from '../../hook/hook';
 
@@ -177,12 +182,28 @@ export const attendanceApi = baseApi.injectEndpoints({
       },
     }),
 
-    latestStatus: builder.query<any, void>({
-      query: () => ({
+    latestStatus: builder.query<any, {CustomerCode: string}>({
+      query: ({CustomerCode}) => ({
         url: 'latestStatus',
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+          CustomerCode: CustomerCode,
+        },
       }),
       providesTags: ['checkin', 'checkout'],
+    }),
+
+    HistoryOfAttendance: builder.query<any, historyPayload>({
+      query: ({fromdate, todate, id, CustomerCode}) => ({
+        url: `HistoryOfAttendance?fromdate=${fromdate}&todate=${todate}&id=${id}`,
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+          CustomerCode: CustomerCode,
+        },
+      }),
+      providesTags: ['attendanceHistory'],
     }),
   }),
 });
@@ -193,4 +214,6 @@ export const {
   useLatestStatusQuery,
   useLazyLatestStatusQuery,
   useRegisterMutation,
+  useHistoryOfAttendanceQuery,
+  useLazyHistoryOfAttendanceQuery,
 } = attendanceApi;

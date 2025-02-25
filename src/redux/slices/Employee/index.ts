@@ -3,15 +3,15 @@ import type {PayloadAction} from '@reduxjs/toolkit';
 import {employeeState} from './types';
 
 const initialState: employeeState = {
-  employeeId: undefined,
-  employeeDetailsState: undefined,
+  employeeId: null,
+  employeeDetailsState: null,
 };
 
 export const employeeSlice = createSlice({
   name: 'employee',
   initialState,
   reducers: {
-    setEmployeeId: (state, action: PayloadAction<string | undefined>) => {
+    setEmployeeId: (state, action: PayloadAction<number | string| null>) => {
       state.employeeId = action.payload;
     },
     setEmployeeDetailsState: (state, action: PayloadAction<any>) => {

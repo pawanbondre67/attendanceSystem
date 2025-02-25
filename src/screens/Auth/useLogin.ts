@@ -1,134 +1,151 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {checkValidation} from './helper';
-import {
-  // useAddFCMMutation,
-  useLazyLoginQuery,
-  // useLoginQuery,
-} from '../../redux/services/auth/login/LoginApiSlice';
-// import {API_TOKEN, APP_DATA_ENCRYPTION_KEY} from '@env';
-// import {NavigationProp, useNavigation} from '@react-navigation/native';
-// import {RootStackParamList} from '../../types/types';
-import {useAppDispatch} from '../../redux/hook/hook';
+import {useLazyLoginQuery} from '../../redux/services/auth/login/LoginApiSlice';
+import {useAppDispatch, useAppSelector} from '../../redux/hook/hook';
 import {
   setEmployeeDetailsState,
   setEmployeeId,
 } from '../../redux/slices/Employee/index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
+import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
+import {useLatestStatusQuery} from '../../redux/services/attendance/attendanceApiSlice';
 
-export interface Errors {
+// Constants for navigation and message severity
+const NAVIGATION_SCREENS = {
+  CAMERA_AUTH: 'cameraAuthScreen',
+  MAIN_TAB: 'mainTabNavigator',
+};
+
+// Interface for CustomerData
+export interface CustomerData {
   CustomerCode: string;
   UserName: string;
   Password: string;
   EmployeeId?: string;
 }
 
-export interface CustomerData extends Errors {}
+// Type for Errors (partial CustomerData)
+export type Errors = Partial<CustomerData>;
 
 const useLogin = () => {
-  // const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const [customerData, setCustomerData] = useState<CustomerData>({
-    CustomerCode: '',
-    UserName: '',
-    Password: '',
-    EmployeeId: '',
-  });
-  const [errors, setErrors] = useState<Errors>({
-    CustomerCode: '',
-    UserName: '',
-    Password: '',
-  });
-  const [loginUser, loginResult] = useLazyLoginQuery();
-  // const {updateEmployeeDetails} = useLocalStorage();
-  // const [employeeId, setEmployeeID] = useState('');
+// State for customer data and errors
+const [customerData, setCustomerData] = useState<CustomerData>({
+  CustomerCode: '',
+  UserName: '',
+  Password: '',
+  EmployeeId: '',
+});
+const [errors, setErrors] = useState<Errors>({
+  CustomerCode: '',
+  UserName: '',
+  Password: '',
+});
 
-  const dispatch = useAppDispatch();
+// Redux hooks
+const dispatch = useAppDispatch();
+const [loginUser, loginResult] = useLazyLoginQuery();
+
+const { CheckInOutData: attendanceData } = useAppSelector((state) => state.attendance);
+
+// Fetch latest status
+const { data: latestStatusData, isLoading: isLatestStatusLoading, refetch: refetchLatestStatus } = useLatestStatusQuery({
+  CustomerCode: customerData.CustomerCode || '',
+});
+
+  // Reset errors when customer data changes
   const resetErrors = (newData: Partial<CustomerData>) => {
     const updatedErrors = {} as Errors;
-    Object.keys(newData).forEach(key => {
+    Object.keys(newData).forEach((key) => {
       updatedErrors[key as keyof Errors] = '';
     });
-    setErrors(updatedErrors);
+    setErrors((prevErrors) => ({ ...prevErrors, ...updatedErrors }));
   };
 
+  // Update customer data and reset errors
   const updateCustomerData = (newData: Partial<CustomerData>) => {
     resetErrors(newData);
-    setCustomerData(prevData => ({...prevData, ...newData}));
+    setCustomerData((prevData) => ({ ...prevData, ...newData }));
   };
 
+  // Save employee details to local storage
   const saveEmployeeDetailsToLocal = async (employeeDetails: CustomerData) => {
-    // setEmployeeID(employeeDetails.UserName);
     try {
       const jsonValue = JSON.stringify(employeeDetails);
       await AsyncStorage.setItem('employeeDetails', jsonValue);
       console.log('Employee details saved to local storage');
     } catch (error) {
       console.error('Failed to save employee details to local storage', error);
+      throw error; // Propagate the error
     }
   };
 
-  // const updateEmployeeDetails = async (  newDetails: Partial<CustomerData>,) => {
-  //   try {
-  //     const updatedDetails = {
-  //       ...customerData,
-  //       ...newDetails,
-  //     } as CustomerData; // Add type assertion here
 
-  //     await updateEmployeeDetails(updatedDetails);
-  //     console.log('Employee details updated:', updatedDetails);
-  //   } catch (error) {
-  //     console.error('Failed to update employee details:', error);
+  // useEffect(() => {
+  //   if (latestStatusData?.data?.status && !isLatestStatusLoading) {
+  //     console.log('Dispatching Latest Status Data:', latestStatusData);
+  //     dispatch(
+  //       setAttendanceData({
+  //         ...attendanceData,
+  //         status: latestStatusData.data.status,
+  //       }),
+  //     );
   //   }
-  // };
+  // }, [latestStatusData?.data?.status, isLatestStatusLoading, dispatch]);
 
-  const handleLogin = async (navigation: any) => {
-    const validationErrors = checkValidation(customerData);
-    if (validationErrors) {
-      setErrors(validationErrors);
-    } else {
-      try {
-        let response;
-        try {
-          response = await loginUser(customerData, false).unwrap();
-          console.log('API Response:', response);
-        } catch (err) {
-          let errormessage;
-          if ((err as any)?.data?.message) {
-            errormessage = (err as any).data.message;
-          } else if ((err as any)?.error) {
-            errormessage = (err as any).error;
-          } else if ((err as any)?.status === 500) {
-            errormessage = 'Server returned with status code 500';
-          }
-          dispatch(setSnackMessage({
-            message: errormessage,
-            severity: 'error',
-          }));
-          // console.error('Login Error:', errormessage);
-        }
+ // Handle login logic
+ const handleLogin = async (navigation : any) => {
+  const validationErrors = checkValidation(customerData);
+  if (validationErrors) {
+    setErrors(validationErrors);
+    return; // Exit early if validation fails
+  }
 
-        if (response?.data) {
-          dispatch(setEmployeeId(response?.data?.employeeId.toString()));
-          dispatch(setEmployeeDetailsState(customerData));
-          await saveEmployeeDetailsToLocal(customerData);
+  try {
+   // Step 1: Perform login
+   const response = await loginUser(customerData, false).unwrap();
+   console.log('API Response:', response);
 
-          navigation.replace(
-            response.data.isAppRegisterMandatory
-              ? 'cameraAuthScreen'
-              : 'mainTabNavigator',
-          );
-        }
-      } catch (error: any) {
-        console.error('Login Failed:', error);
-        dispatch(
-          setSnackMessage({
-            message: 'Error while logging in',
-            severity: 'error',
-          }),
-        );
-      }
-    }
-  };
+   if (response?.data) {
+     // Step 2: Update employee details in Redux and local storage
+     dispatch(setEmployeeId(response.data.employeeId.toString()));
+     dispatch(setEmployeeDetailsState(customerData));
+     await saveEmployeeDetailsToLocal(customerData);
+
+     // Step 3: Fetch latest status data
+     const latestStatusResponse = await refetchLatestStatus().unwrap();
+     console.log('Latest Status Data:', latestStatusResponse);
+
+     // Step 4: Update attendance data in Redux
+     if (latestStatusResponse?.data?.status) {
+       dispatch(
+         setAttendanceData({
+           ...attendanceData,
+           status: latestStatusResponse.data.status,
+         }),
+       );
+     }
+
+     // Step 5: Navigate to the appropriate screen
+     if (response.data.isAppRegisterMandatory) {
+       navigation.replace(NAVIGATION_SCREENS.CAMERA_AUTH);
+     } else {
+       navigation.replace(NAVIGATION_SCREENS.MAIN_TAB);
+     }
+   }
+ } catch (error: any) {
+    console.error('Login Failed:', error);
+    const errorMessage =
+      error?.data?.message || error?.error || 'Error while logging in';
+    dispatch(
+      setSnackMessage({
+        message: errorMessage,
+        severity: 'error',
+      }),
+    );
+  }
+};
+
   return {
     customerData,
     updateCustomerData,

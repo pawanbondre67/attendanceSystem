@@ -1,5 +1,8 @@
 import {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppDispatch } from '../../redux/hook/hook';
+import { setEmployeeDetailsState, setEmployeeId } from '../../redux/slices/Employee';
+import { setCheckInOutData } from '../../redux/slices/Attendance';
 interface CheckInOutData {
   status: string | null;
   checkInTime?: string | null;
@@ -21,6 +24,8 @@ const useLocalStorage = ({navigation} : any) => {
   const [attendanceData, setAttendanceData] = useState<CheckInOutData | null>(
     null,
   );
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const getDataFromLocalStorage = async () => {
@@ -69,6 +74,9 @@ const useLocalStorage = ({navigation} : any) => {
     try {
       await AsyncStorage.removeItem('employeeDetails');
       await AsyncStorage.removeItem('attendanceData');
+      dispatch(setEmployeeId(''));
+      dispatch(setEmployeeDetailsState(null));
+      dispatch(setCheckInOutData({ status: null , checkInTime: null, checkOutTime: null, date: null }));
       console.log('employeeId deleted from local storage');
       // Optionally, navigate to another screen or update state
       navigation.replace('loginScreen');

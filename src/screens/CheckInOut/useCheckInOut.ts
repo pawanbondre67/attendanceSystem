@@ -295,21 +295,9 @@ const useCheckInOut = ({
             // If connected, hit API request to backend
             const status = btnLabel.toLowerCase();
             if (status === 'checkin') {
-              const response = await markAttendance(payload);
-              console.log('Attendance Response:', response);
-              if (response.error) {
-                console.log('Error marking attendance:', response.error);
-                // Log the payload to identify null values
-                console.log('Payload with null values:', payload);
-              }
+               await markAttendance(payload);
             } else if (status === 'checkout') {
-              const response = await checkOut(payload);
-              console.log('CheckOut Response:', response);
-              if (response.error) {
-                console.error('Error marking CheckOut:', response.error);
-                // Log the payload to identify null values
-                console.log('Payload with null values:', payload);
-              }
+             await checkOut(payload);
             } else {
               // If not connected, hit SQL request
               try {

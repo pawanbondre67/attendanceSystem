@@ -1,4 +1,4 @@
-import React, {useRef, useCallback} from 'react';
+import React, {useRef, useCallback, useState, useEffect, useMemo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {
   ExpandableCalendar,
@@ -10,91 +10,187 @@ import testIDs from '../testIDs';
 import {agendaItems, getMarkedDates} from '../mocks/agendaItems';
 import AgendaItem from '../mocks/AgendaItem';
 import {getTheme, themeColor, lightThemeColor} from '../mocks/theme';
+import {useAppSelector} from '../../../../../../redux/hook/hook';
+import {useHistoryOfAttendanceQuery} from '../../../../../../redux/services/attendance/attendanceApiSlice';
+import Spinner from '../../../../../../components/Spinner';
 
 const leftArrowIcon = require('../img/previous.png');
 const rightArrowIcon = require('../img/next.png');
-const ITEMS: any[] = agendaItems;
 
 interface Props {
   weekView?: boolean;
 }
 
 const ExpandableCalendarScreen = (props: Props) => {
-  console.log('ExpandableCalendarScreen props: ', props);
+  const {employeeDetailsState, employeeId} = useAppSelector(state => state.employee);
+  const {status} = useAppSelector(state => state.attendance.CheckInOutData);
+
+  const today = new Date().toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState(today);
+
+  console.log('selectedDate', selectedDate);
+
+  // const getDateTwoDaysBefore = (date: string): string => {
+  //   const parsedDate = new Date(date);
+  //   parsedDate.setDate(parsedDate.getDate() - 2);
+  //   return parsedDate.toISOString().split('T')[0];
+  // };
+
+  // const fromDate = getDateTwoDaysBefore(selectedDate);
+  // console.log('fromDate', fromDate);
+
+  const {data, error, isLoading, refetch} = useHistoryOfAttendanceQuery({
+    fromdate: selectedDate,
+    todate: selectedDate,
+    id: employeeId,
+    CustomerCode: employeeDetailsState?.CustomerCode || '',
+  });
+
+  const [items, setItems] = useState<any[]>([]);
+
+  // Refetch data when status or selectedDate changes
+  useEffect(() => {
+    refetch();
+  }, [status, selectedDate, refetch]);
+
+  useEffect(() => {
+    console.log('data----->', data);
+  }, [data]);
+
+  const formatServerData = data => {
+    const formattedData: any[] = [];
+
+    data.forEach((entry: {inDate: any; inTime: any; outTime: any}) => {
+      const {inDate, inTime, outTime} = entry;
+
+      // Find or create the day entry in the formattedData array
+      let dayEntry = formattedData.find(item => item.title === inDate);
+      if (!dayEntry) {
+        dayEntry = {
+          title: inDate,
+          data: [],
+        };
+        formattedData.push(dayEntry);
+      }
+
+      // Add the inTime and outTime to the day's data
+      dayEntry.data.push({
+        inTime: inTime ? formatTime(inTime) : null,
+        outTime: outTime ? formatTime(outTime) : null,
+      });
+    });
+
+    return formattedData;
+  };
+
+  const formatTime = (timestamp: string): string | null => {
+    if (!timestamp) {
+      return null;
+    }
+
+    const [hours, minutes] = timestamp.split('.')[0].slice(0, 5).split(':');
+    let hour = parseInt(hours, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+
+    if (hour === 0) {
+      hour = 12;
+    } else if (hour > 12) {
+      hour -= 12;
+    }
+
+    return `${hour}:${minutes} ${period}`;
+  };
+
+  const formattedData = useMemo(() => {
+    if (data && Array.isArray(data.data)) {
+      return formatServerData(data.data);
+    }
+    return [];
+  }, [data , status]);
+
+  useEffect(() => {
+    setItems(formattedData.reverse());
+  }, [formattedData]);
+
   const {weekView} = props;
-  // const marked = useRef(getMarkedDates());
   const theme = useRef(getTheme());
   const todayBtnTheme = useRef({
     todayButtonTextColor: themeColor,
   });
 
-  // const onDateChanged = useCallback((date, updateSource) => {
-  //   console.log('ExpandableCalendarScreen onDateChanged: ', date, updateSource);
-  // }, []);
+  const onDateChanged = useCallback((date, updateSource) => {
+    if (updateSource === 'dayPress') {
+      setSelectedDate(date);
+      console.log('onDateChanged', date);
+    }
+    console.log('ExpandableCalendarScreen onDateChanged: ', date, updateSource);
+  }, []);
 
-  // const onMonthChange = useCallback(({dateString}) => {
-  //   console.log('ExpandableCalendarScreen onMonthChange: ', dateString);
-  // }, []);
-
-
-  const renderItem = useCallback(({ item }: any) => {
+  const renderItem = useCallback(({item}: any) => {
     if (!item) {
       return (
-        <View style={{ padding: 20 }}>
+        <View style={styles.common}>
           <Text>No data available</Text>
         </View>
       );
     }
     return <AgendaItem item={item} />;
   }, []);
-   
-  const keyExtractor = useCallback((item, index) => index.toString(), []);
+
+  const keyExtractor = useCallback((item, index) => {
+    return item?.title ? item.title : index.toString();
+  }, []);
+
+  if (error) {
+    return (
+      <View style={styles.common}>
+        <Text>Error loading data. Please try again later.</Text>
+      </View>
+    );
+  }
+
 
   return (
     <CalendarProvider
-      date={ITEMS[1]?.title}
-      // onDateChanged={onDateChanged}
-      // onMonthChange={onMonthChange}
+      date={selectedDate}
+      onDateChanged={onDateChanged}
       showTodayButton
-      // disabledOpacity={0.6}
       theme={todayBtnTheme.current}
-      // todayBottomMargin={16}
     >
       {weekView ? (
         <WeekCalendar
           testID={testIDs.weekCalendar.CONTAINER}
           firstDay={1}
-          // markedDates={marked.current}
         />
       ) : (
         <ExpandableCalendar
           testID={testIDs.expandableCalendar.CONTAINER}
-          // horizontal={false}
-          // hideArrows
-          // disablePan
-          // hideKnob
-          // initialPosition={ExpandableCalendar.positions.OPEN}
-          // calendarStyle={styles.calendar}
-          // headerStyle={styles.header} // for horizontal only
-          // disableWeekScroll
           theme={theme.current}
-          // disableAllTouchEventsForDisabledDays
+          maxDate={today}
+          disableAllTouchEventsForDisabledDays
           firstDay={1}
-          // markedDates={marked.current}
           leftArrowImageSource={leftArrowIcon}
           rightArrowImageSource={rightArrowIcon}
           animateScroll
-          // closeOnDayPress={false}
         />
       )}
-      <AgendaList
-       sections={ITEMS}
-       renderItem={renderItem}
-       keyExtractor={keyExtractor}
-       initialNumToRender={5}
-       sectionStyle={styles.section}
-
-      />
+      {isLoading ? (
+        <View style={styles.common}>
+          <Spinner />
+        </View>
+      ) : items.length > 0 ? (
+        <AgendaList
+          sections={items}
+          renderItem={renderItem}
+          keyExtractor={keyExtractor}
+          initialNumToRender={5}
+          sectionStyle={styles.section}
+        />
+      ) : (
+        <View style={styles.common}>
+          <Text>No data available</Text>
+        </View>
+      )}
     </CalendarProvider>
   );
 };
@@ -113,5 +209,10 @@ const styles = StyleSheet.create({
     backgroundColor: lightThemeColor,
     color: 'grey',
     textTransform: 'capitalize',
+  },
+  common: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
 });

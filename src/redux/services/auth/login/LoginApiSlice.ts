@@ -6,7 +6,6 @@ export const loginApi = baseApi.injectEndpoints({
   endpoints: builder => ({
     login: builder.query<LoginResponse, LoginApiArgs>({
       query: payload => {
-        console.log('Payload:', payload);
         return {
           url: 'login',
           method: 'POST',

@@ -24,6 +24,10 @@
         <string>$(CURRENT_PROJECT_VERSION)</string>
         <key>LSRequiresIPhoneOS</key>
         <true/>
+
+
+
+        <!-- App Transport Security Settings -->
         <key>NSAppTransportSecurity</key>
         <dict>
             <key>NSAllowsArbitraryLoads</key>
@@ -62,6 +66,10 @@
         <!-- Media Library Permission -->
         <key>NSPhotoLibraryUsageDescription</key>
         <string>We need access to your media library to select and upload photos and videos.</string>
+
+        <!-- Music Permission -->
+        <key>NSAppleMusicUsageDescription</key>
+        <string>$(PRODUCT_NAME) needs access to your music library.</string>
 
         <key>UIAppFonts</key>
         <array>

@@ -196,7 +196,9 @@ const useCheckInOut = ({
         message: 'Attendance marked successfully',
         severity: 'success',
       }));
-      dispatch(setAttendanceData(updatedAttendanceData));
+      console.log('updatedAttendanceData after markng attendace', updatedAttendanceData);
+
+      dispatch(setAttendanceData(updatedAttendanceData));   // we are updating these state in history screen
       storeAttendanceData(updatedAttendanceData);
       navigation.dispatch(
         CommonActions.reset({
@@ -225,6 +227,7 @@ const useCheckInOut = ({
         status: 'inout',
         checkOutTime: currentTime12,
       };
+      console.log('updatedAttendanceData after markng attendace', updatedAttendanceData);
 
       dispatch(setAttendanceData(updatedAttendanceData));
       dispatch(setSnackMessage({

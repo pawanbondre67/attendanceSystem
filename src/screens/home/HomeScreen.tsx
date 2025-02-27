@@ -19,18 +19,20 @@ import LogoutDialog from '../../components/Dialog';
 import {isIos} from '../../helper/utility';
 import { useLatestStatusQuery } from '../../redux/services/attendance/attendanceApiSlice';
 import { useLazyLoginQuery } from '../../redux/services/auth/login/LoginApiSlice';
+import useHistoryData from './useHistoryData';
 const HomeScreen = ({navigation}: any) => {
 
+  const {inTime , outTime , refetch} = useHistoryData();
 
 
   const {employeeId} = useAppSelector(state => state.employee);
 
 
-  const {employeeDetails, attendanceData } = useLocalStorage({
+  const {employeeDetails } = useLocalStorage({
     navigation,
   });
 
-  const {status, checkInTime, checkOutTime} = useAppSelector(
+  const {status} = useAppSelector(
     state => state.attendance.CheckInOutData,
   );
   const {employeeDetailsState} = useAppSelector(state => state.employee);
@@ -46,6 +48,11 @@ useEffect(() => {
     loginUser(employeeDetailsState, false);
   }
 }, [latestStatusDataError]);
+
+// Refetch history data when the component mounts
+useEffect(() => {
+  refetch();
+}, [refetch]);
 
   console.log('status', status);
 
@@ -132,14 +139,14 @@ useEffect(() => {
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
             <Text style={styles.punchText}>
-              {checkInTime || attendanceData?.checkInTime || '00:00'}
+              {inTime || '00:00'}
             </Text>
             <Text style={styles.punchLabel}>Check In</Text>
           </View>
           <View style={styles.punchItem}>
             <Icon name="access-time" size={24} color="#ff0000" />
             <Text style={styles.punchText}>
-              {checkOutTime || attendanceData?.checkOutTime || '00:00'}
+              {outTime  || '00:00'}
             </Text>
             <Text style={styles.punchLabel}>Check Out</Text>
           </View>

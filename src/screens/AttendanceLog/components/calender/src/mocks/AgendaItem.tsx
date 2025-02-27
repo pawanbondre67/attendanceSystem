@@ -20,15 +20,19 @@ const AgendaItem = (props: ItemProps) => {
     <>
       <View style={styles.cardContainer}>
         <View style={styles.timeContainer}>
-          <View style={styles.totalhrs}>
-            <Text>Total Hours</Text>
-            <Text style={styles.timeText}>08:00:00 hrs</Text>
+          <View>
+            <Text>Total Hrs</Text>
+            <Text> 08:00 hrs</Text>
           </View>
-          <View style={styles.totalhrs}>
-            <Text>Check In & Out </Text>
-            <Text style={styles.timeText}>
-              In: {item.inTime} Out: {item.outTime}
-            </Text>
+          <View style={styles.checkinout}>
+            <View>
+              <Text style={styles.checkText}>Check in</Text>
+              <Text style={styles.timeText}>{item.inTime}</Text>
+            </View>
+            <View>
+              <Text style={styles.checkText}>Check out</Text>
+              <Text style={styles.timeText}>{item.outTime || '00:00 AM'}</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -61,19 +65,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'white',
   },
-  dateContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    gap: 10,
-    alignItems: 'center',
-    // borderWidth: 1,
-    // borderColor: 'lightgrey',
-    paddingRight: 10,
-  },
-  dateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   timeContainer: {
     flexDirection: 'row',
     padding: 10,
@@ -87,8 +78,16 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 16,
     fontWeight: 500,
+    paddingHorizontal: 5,
+    textAlign: 'center',
   },
-  totalhrs: {
-    flexDirection: 'column',
+  checkText: {
+    paddingHorizontal: 10,
+    textAlign: 'center',
+  },
+  checkinout: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'space-between',
   },
 });

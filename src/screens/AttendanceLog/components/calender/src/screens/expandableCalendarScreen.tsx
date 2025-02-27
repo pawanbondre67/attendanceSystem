@@ -7,13 +7,12 @@ import {
   WeekCalendar,
 } from 'react-native-calendars';
 import testIDs from '../testIDs';
-import {agendaItems, getMarkedDates} from '../mocks/agendaItems';
+// import { getMarkedDates} from '../mocks/agendaItems';
 import AgendaItem from '../mocks/AgendaItem';
 import {getTheme, themeColor, lightThemeColor} from '../mocks/theme';
 import {useAppSelector} from '../../../../../../redux/hook/hook';
 import {useHistoryOfAttendanceQuery} from '../../../../../../redux/services/attendance/attendanceApiSlice';
 import Spinner from '../../../../../../components/Spinner';
-
 const leftArrowIcon = require('../img/previous.png');
 const rightArrowIcon = require('../img/next.png');
 
@@ -22,22 +21,15 @@ interface Props {
 }
 
 const ExpandableCalendarScreen = (props: Props) => {
-  const {employeeDetailsState, employeeId} = useAppSelector(state => state.employee);
+  const {employeeDetailsState, employeeId} = useAppSelector(
+    state => state.employee,
+  );
   const {status} = useAppSelector(state => state.attendance.CheckInOutData);
 
   const today = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(today);
 
   console.log('selectedDate', selectedDate);
-
-  // const getDateTwoDaysBefore = (date: string): string => {
-  //   const parsedDate = new Date(date);
-  //   parsedDate.setDate(parsedDate.getDate() - 2);
-  //   return parsedDate.toISOString().split('T')[0];
-  // };
-
-  // const fromDate = getDateTwoDaysBefore(selectedDate);
-  // console.log('fromDate', fromDate);
 
   const {data, error, isLoading, refetch} = useHistoryOfAttendanceQuery({
     fromdate: selectedDate,
@@ -55,12 +47,16 @@ const ExpandableCalendarScreen = (props: Props) => {
 
   useEffect(() => {
     console.log('data----->', data);
+    console.log('items----->', items);
   }, [data]);
 
   const formatServerData = data => {
     const formattedData: any[] = [];
 
-    data.forEach((entry: {inDate: any; inTime: any; outTime: any}) => {
+      // Reverse the data array
+  const reversedData = [...data].reverse();
+
+  reversedData.forEach((entry: {inDate: any; inTime: any; outTime: any}) => {
       const {inDate, inTime, outTime} = entry;
 
       // Find or create the day entry in the formattedData array
@@ -106,10 +102,10 @@ const ExpandableCalendarScreen = (props: Props) => {
       return formatServerData(data.data);
     }
     return [];
-  }, [data , status]);
+  }, [data, status]);
 
   useEffect(() => {
-    setItems(formattedData.reverse());
+    setItems(formattedData);
   }, [formattedData]);
 
   const {weekView} = props;
@@ -127,6 +123,7 @@ const ExpandableCalendarScreen = (props: Props) => {
   }, []);
 
   const renderItem = useCallback(({item}: any) => {
+    console.log('item------>', item);
     if (!item) {
       return (
         <View style={styles.common}>
@@ -149,19 +146,14 @@ const ExpandableCalendarScreen = (props: Props) => {
     );
   }
 
-
   return (
     <CalendarProvider
       date={selectedDate}
       onDateChanged={onDateChanged}
       showTodayButton
-      theme={todayBtnTheme.current}
-    >
+      theme={todayBtnTheme.current}>
       {weekView ? (
-        <WeekCalendar
-          testID={testIDs.weekCalendar.CONTAINER}
-          firstDay={1}
-        />
+        <WeekCalendar testID={testIDs.weekCalendar.CONTAINER} firstDay={1} />
       ) : (
         <ExpandableCalendar
           testID={testIDs.expandableCalendar.CONTAINER}

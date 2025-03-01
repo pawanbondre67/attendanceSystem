@@ -55,10 +55,17 @@
                 location.</string>
         </dict>
 
+        <key>NSAppleMusicUsageDescription</key>
+        <string>We need access to your music library to provide personalized features.</string>
+
+
         <!-- Location When In Use Permission -->
-        <key>NSLocationWhenInUseUsageDescription</key>
-        <string>We need access to your location while using the app to mark your attendance based on
-            your current location.</string>
+        
+        <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+        <string>We need access to your location to provide location-based services, even when the
+            app is in the background.</string>
+
+       
 
         <!-- Media Library Permission -->
         <key>NSPhotoLibraryUsageDescription</key>

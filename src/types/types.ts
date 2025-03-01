@@ -28,18 +28,12 @@ export type AppStackParamList = {
   };
   cameraAuthScreen: undefined;
   loginScreen: undefined;
+  checkinout: undefined;
   [key: string]: undefined | object;
 };
 
 export type MainTabParamList = {
-  homeTab: {
-    screen: keyof AttendanceStackParamList;
-  };
+  homeTab: undefined;
   attendanceHistoryTab: undefined;
   profileTab : undefined;
-};
-
-export type AttendanceStackParamList = {
-  homeScreen: undefined;
-  checkinout: undefined;
 };

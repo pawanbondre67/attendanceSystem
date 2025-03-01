@@ -190,6 +190,20 @@ const CheckInOut = ({navigation}: Props) => {
 
   return (
     <View style={styles.container}>
+      {isFetchingLocation && (
+        <View
+          style={{
+            zIndex: 99,
+            position: 'absolute',
+            alignItems: 'center',
+            width: '100%',
+            height: '100%',
+            backgroundColor: '#F5F5F5',
+            opacity: 0.7,
+          }}>
+          <ActivityIndicator style={{flex: 1}} size="large" color="#578FCA" />
+        </View>
+      )}
       <View style={styles.imageContainer}>
         <TouchableOpacity style={styles.imagebody} onPress={handleImageClick}>
           <Image

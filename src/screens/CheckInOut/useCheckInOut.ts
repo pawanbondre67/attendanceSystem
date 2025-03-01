@@ -200,12 +200,7 @@ const useCheckInOut = ({
 
       dispatch(setAttendanceData(updatedAttendanceData));   // we are updating these state in history screen
       storeAttendanceData(updatedAttendanceData);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'homeTab'}],
-        }),
-      );
+      navigation.navigate('mainTabNavigator');
     }
 
     if (markAttendanceResult?.isError && markAttendanceResult?.error) {
@@ -235,12 +230,8 @@ const useCheckInOut = ({
         severity: 'success',
       }));
       storeAttendanceData(updatedAttendanceData);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'homeTab'}],
-        }),
-      );
+      console.log('navigation--------->' , navigation);
+    navigation.navigate('mainTabNavigator');
     }
     if (checkOutResult?.isError && checkOutResult?.error) {
       if (checkOutResult.error.status === 500) {

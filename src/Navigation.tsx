@@ -1,16 +1,11 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import SplashScreen from './screens/splash/SplashScreen';
 import HomeScreen from './screens/home/HomeScreen';
 import LoginScreen from './screens/Auth/LoginScreen';
 import CameraAuth from './screens/cameraAuth/CameraAuth';
-import {
-  AttendanceStackParamList,
-  AppStackParamList,
-  MainTabParamList,
-} from './types/types';
+import {AppStackParamList, MainTabParamList} from './types/types';
 import CheckInOut from './screens/CheckInOut';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AttendanceLog from './screens/AttendanceLog';
@@ -18,7 +13,6 @@ import ProfileScreen from './screens/profile/ProfileScreen';
 import {isIos} from './helper/utility';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
-const AttendanceStack = createNativeStackNavigator<AttendanceStackParamList>();
 const MainTab = createBottomTabNavigator<MainTabParamList>();
 
 const MainTabNavigator = () => {
@@ -26,11 +20,6 @@ const MainTabNavigator = () => {
     <MainTab.Navigator
       initialRouteName="homeTab"
       screenOptions={({route}) => {
-        // Get the currently focused route name
-        const routeName = getFocusedRouteNameFromRoute(route) ?? 'homeScreen';
-
-        // Hide the tab bar if the focused route is 'checkinout'
-        const isCheckInOutScreen = routeName === 'checkinout';
 
         return {
           // eslint-disable-next-line react/no-unstable-nested-components
@@ -56,7 +45,6 @@ const MainTabNavigator = () => {
             elevation: 0,
             height: isIos ? 90 : 70,
             paddingTop: isIos ? 10 : 5,
-            display: isCheckInOutScreen ? 'none' : 'flex', // Hide tab bar for CheckInOut screen
           },
           tabBarLabelStyle: {
             fontSize: 12,
@@ -71,7 +59,7 @@ const MainTabNavigator = () => {
           animation: 'shift',
           tabBarLabel: 'Home',
         }}
-        component={AttendanceStackNavigator}
+        component={HomeScreen}
       />
 
       <MainTab.Screen
@@ -97,32 +85,32 @@ const MainTabNavigator = () => {
   );
 };
 
-const AttendanceStackNavigator = () => {
-  return (
-    <AttendanceStack.Navigator initialRouteName="homeScreen">
-      <AttendanceStack.Screen
-        name="homeScreen"
-        options={{headerShown: false}}
-        component={HomeScreen}
-      />
-      <AttendanceStack.Screen
-        name="checkinout"
-        options={{
-          title: 'Attendance',
-          headerStyle: {
-            backgroundColor: '#578FCA',
-          },
-          headerBackTitle: 'Back',
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-        component={CheckInOut}
-      />
-    </AttendanceStack.Navigator>
-  );
-};
+// const AttendanceStackNavigator = () => {
+//   return (
+//     <AttendanceStack.Navigator initialRouteName="homeScreen">
+//       <AttendanceStack.Screen
+//         name="homeScreen"
+//         options={{headerShown: false}}
+//         component={HomeScreen}
+//       />
+//       <AttendanceStack.Screen
+//         name="checkinout"
+//         options={{
+//           title: 'Attendance',
+//           headerStyle: {
+//             backgroundColor: '#578FCA',
+//           },
+//           headerBackTitle: 'Back',
+//           headerTintColor: '#fff',
+//           headerTitleStyle: {
+//             fontWeight: 'bold',
+//           },
+//         }}
+//         component={CheckInOut}
+//       />
+//     </AttendanceStack.Navigator>
+//   );
+// };
 
 const AppNavigator = () => {
   return (
@@ -152,6 +140,21 @@ const AppNavigator = () => {
           headerShown: false,
         }}
         component={LoginScreen}
+      />
+      <AppStack.Screen
+        name="checkinout"
+        options={{
+          title: 'Attendance',
+          headerStyle: {
+            backgroundColor: '#578FCA',
+          },
+          headerBackTitle: 'Back',
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+        component={CheckInOut}
       />
     </AppStack.Navigator>
   );

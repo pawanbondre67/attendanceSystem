@@ -24,7 +24,7 @@ setup_permissions([
   # 'FaceID',
   'Camera',
   'LocationAccuracy',
-  'LocationAlways',
+  # 'LocationAlways',
   'LocationWhenInUse',
   'MediaLibrary',
   # 'Microphone',

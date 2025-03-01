@@ -153,13 +153,14 @@ const ExpandableCalendarScreen = (props: Props) => {
       showTodayButton
       theme={todayBtnTheme.current}>
       {weekView ? (
-        <WeekCalendar testID={testIDs.weekCalendar.CONTAINER} firstDay={1} />
+        <WeekCalendar  testID={testIDs.weekCalendar.CONTAINER} maxDate={today} firstDay={1} />
       ) : (
         <ExpandableCalendar
+        
           testID={testIDs.expandableCalendar.CONTAINER}
           theme={theme.current}
           maxDate={today}
-          disableAllTouchEventsForDisabledDays
+          
           firstDay={1}
           leftArrowImageSource={leftArrowIcon}
           rightArrowImageSource={rightArrowIcon}

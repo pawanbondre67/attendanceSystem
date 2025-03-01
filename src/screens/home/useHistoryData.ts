@@ -1,7 +1,6 @@
 import {useEffect, useMemo, useState} from 'react';
 import {useAppSelector} from '../../redux/hook/hook';
 import {useHistoryOfAttendanceQuery} from '../../redux/services/attendance/attendanceApiSlice';
-import {set} from 'lodash';
 
 const useHistoryData = () => {
   const {employeeDetailsState, employeeId} = useAppSelector(

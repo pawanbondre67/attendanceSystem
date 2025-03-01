@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     padding: 20,
+    paddingBottom: 40,
     borderRadius: 10,
     width: '100%',
     maxWidth: 350,
@@ -175,18 +176,15 @@ const styles = StyleSheet.create({
     }),
   },
   inputContainer: {
-    gap: 10,
-    // marginTop: 20,
+    marginTop: 10,
   },
   label: {
     fontSize: 16,
-    // marginBottom: 5,
+    marginBottom: 8,
   },
   input: {
     height: 40,
     width: '100%',
-    marginTop: 5,
-    marginBottom: 1,
     borderWidth: 1,
     paddingHorizontal: 10,
     backgroundColor: '#fff',

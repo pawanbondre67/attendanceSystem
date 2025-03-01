@@ -354,7 +354,7 @@ const HomeScreen = ({navigation}: any) => {
       <View
         style={[
           styles.header,
-          {paddingTop: insets.top},
+          {paddingTop: isIos ? insets.top : 10},
         ]}>
         <View style={styles.userInfo}>
           <TouchableWithoutFeedback

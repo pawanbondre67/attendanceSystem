@@ -48,8 +48,8 @@ const useCheckInOut = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  // console.log('currentLat', currentLatitude);
-  // console.log('currentLong', currentLongitude);
+  console.log('currentLat', currentLatitude);
+  console.log('currentLong', currentLongitude);
   const {storeAttendanceData} = useLocalStorage({});
 
   const {CheckInOutData: attendanceData} = useAppSelector(
@@ -59,7 +59,7 @@ const useCheckInOut = ({
   const [markAttendance, markAttendanceResult] = useMarkAttendanceMutation();
   // const [isMarkingAttendance, setIsMarkingAttendance] = useState(false);
   // const {data: latestStatusData, isLoading, error} = useLatestStatusQuery();
-  // console.log('markAttendanceResult', markAttendanceResult);
+  console.log('markAttendanceResult', markAttendanceResult);
 
   const [checkOut, checkOutResult] = useCheckOutMutation();
   const route = useRoute<CheckInOutRouteProp>();
@@ -222,7 +222,7 @@ const useCheckInOut = ({
         status: 'inout',
         checkOutTime: currentTime12,
       };
-      // console.log('updatedAttendanceData after markng attendace', updatedAttendanceData);
+      console.log('updatedAttendanceData after markng attendace', updatedAttendanceData);
 
       dispatch(setAttendanceData(updatedAttendanceData));
       dispatch(setSnackMessage({
@@ -230,7 +230,7 @@ const useCheckInOut = ({
         severity: 'success',
       }));
       storeAttendanceData(updatedAttendanceData);
-      // console.log('navigation--------->' , navigation);
+      console.log('navigation--------->' , navigation);
     navigation.navigate('mainTabNavigator');
     }
     if (checkOutResult?.isError && checkOutResult?.error) {
@@ -277,12 +277,12 @@ const useCheckInOut = ({
     const errors = generateErrorState(checkInOutData);
     setErrorState(errors as ErrorState);
     if (Object.keys(errors).length > 0) {
-      // console.log('errors', errors);
+      console.log('errors', errors);
       return;
     } else {
       try {
         const payload = await generateCheckinOutPayload();
-        // console.log('payload', payload);
+        console.log('payload', payload);
         // Check network connectivity
         NetInfo.fetch().then(async state => {
           if (state.isConnected) {
@@ -296,7 +296,7 @@ const useCheckInOut = ({
               // If not connected, hit SQL request
               try {
                 // await saveAttendance(payload);
-                // console.log('attendance saved ', payload);
+                console.log('attendance saved ', payload);
                 // dispatch(setSnackMessage('Attendance saved offline'));
               } catch (innerError) {
                 console.error('Error saving attendance:', innerError);
@@ -311,7 +311,7 @@ const useCheckInOut = ({
   };
 
   const onPhotoCapture = (result: string) => {
-    // console.log('result', result);
+    console.log('result', result);
     updateCheckInOutData({image: result});
     updateCheckInOutData({showCamera: false});
   };
@@ -323,7 +323,7 @@ const useCheckInOut = ({
   const proceedMarkAttendance = async () => {
     try {
       const payload = await generateCheckinOutPayload();
-      // console.log('payload', payload);
+      console.log('payload', payload);
       NetInfo.fetch().then(async state => {
         if (state.isConnected) {
           // If connected, hit API request to backend
@@ -345,7 +345,7 @@ const useCheckInOut = ({
           // If not connected, hit SQL request
           try {
             // const resp = await saveAttendance(payload);
-            // console.log('response');
+            console.log('response');
             // dispatch(setSnackMessage('Attendance saved offline'));
           } catch (error) {
             console.error('Error saving attendance:', error);

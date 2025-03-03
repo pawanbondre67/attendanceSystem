@@ -23,58 +23,53 @@
         <key>CFBundleVersion</key>
         <string>$(CURRENT_PROJECT_VERSION)</string>
         <key>LSRequiresIPhoneOS</key>
-        <true />
+        <true/>
+
 
 
         <!-- App Transport Security Settings -->
         <key>NSAppTransportSecurity</key>
         <dict>
             <key>NSAllowsArbitraryLoads</key>
-            <false />
+            <false/>
             <key>NSAllowsLocalNetworking</key>
-            <true />
+            <true/>
             <key>NSExceptionDomains</key>
             <dict>
                 <key>115.124.123.180</key>
                 <dict>
                     <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                    <true />
+                    <true/>
                 </dict>
             </dict>
         </dict>
 
         <!-- Camera Permission -->
         <key>NSCameraUsageDescription</key>
-        <string>We need access to your camera to capture an image for marking your attendance.</string>
+        <string>$(PRODUCT_NAME) needs access to your camera.</string>
 
         <!-- Location Accuracy Permission -->
         <key>NSLocationTemporaryUsageDescriptionDictionary</key>
         <dict>
             <key>LocationAccuracy</key>
-            <string>We need precise location to accurately mark your attendance from your current
-                location.</string>
+            <string>We need precise location to provide better service and personalized experience.</string>
         </dict>
 
-        <key>NSAppleMusicUsageDescription</key>
-        <string>We need access to your music library to provide personalized features.</string>
-
+        <!-- Location Always Permission -->
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>We need your location to provide location-based services.</string>
 
         <!-- Location When In Use Permission -->
-        
-        <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-        <string>We need access to your location to provide location-based services, even when the
-            app is in the background.</string>
-
-       
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>We need your location to provide location-based services.</string>
 
         <!-- Media Library Permission -->
         <key>NSPhotoLibraryUsageDescription</key>
-        <string>We need access to your media library to let you select a photo for your profile
-            picture.</string>
+        <string>We need access to your media library to select and upload photos and videos.</string>
 
-        <!-- Music Permission
+        <!-- Music Permission -->
         <key>NSAppleMusicUsageDescription</key>
-        <string>$(PRODUCT_NAME) needs access to your music library.</string> -->
+        <string>$(PRODUCT_NAME) needs access to your music library.</string>
 
         <key>UIAppFonts</key>
         <array>
@@ -114,6 +109,6 @@
             <string>UIInterfaceOrientationPortraitUpsideDown</string>
         </array>
         <key>UIViewControllerBasedStatusBarAppearance</key>
-        <false />
+        <false/>
     </dict>
 </plist>

@@ -31,7 +31,7 @@ export type Errors = Partial<CustomerData>;
 const useLogin = () => {
 // State for customer data and errors
 const [customerData, setCustomerData] = useState<CustomerData>({
-  CustomerCode: '',
+  CustomerCode: 'OTD1000',
   UserName: '',
   Password: '',
   EmployeeId: '',

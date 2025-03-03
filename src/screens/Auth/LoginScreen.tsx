@@ -29,7 +29,7 @@ const LoginScreen = ({navigation}: {navigation: any}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const {
-    customerData: {CustomerCode, UserName, Password},
+    customerData: {CustomerCode , UserName, Password},
     errors,
     updateCustomerData,
     handleLogin,

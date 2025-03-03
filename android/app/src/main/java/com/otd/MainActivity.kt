@@ -1,4 +1,4 @@
-package com.otd
+package com.probus.otd
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

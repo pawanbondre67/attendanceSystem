@@ -53,7 +53,15 @@ react {
     /* Autolinking */
     autolinkLibrariesWithApp()
 }
-
+/**
+ * Set this to true to create two separate APKs instead of one:
+ *   - An APK that only works on ARM devices
+ *   - An APK that only works on x86 devices
+ * The advantage is the size of the APK is reduced by about 4MB.
+ * Upload all the APKs to the Play Store and people will download
+ * the correct one based on the CPU architecture of their device.
+ */
+def enableSeparateBuildPerCPUArchitecture = true
 /**
  * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
  */
@@ -77,13 +85,22 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.otd"
+    namespace "com.probus.otd"
     defaultConfig {
-        applicationId "com.otd"
+        applicationId "com.probus.otd"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
+    }
+    splits {
+        abi {
+            reset()
+            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+        }
     }
     signingConfigs {
         debug {
@@ -92,6 +109,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+        storeFile file('otd.keystore')
+        storePassword 'otd@123'
+        keyAlias 'key0'
+        keyPassword 'otd@123'
+    }
     }
     buildTypes {
         debug {

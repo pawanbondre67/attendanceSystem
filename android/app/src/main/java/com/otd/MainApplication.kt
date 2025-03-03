@@ -1,4 +1,4 @@
-package com.otd
+package com.probus.otd
 
 import android.app.Application
 import com.facebook.react.PackageList

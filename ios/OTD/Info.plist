@@ -46,28 +46,31 @@
 
         <!-- Camera Permission -->
         <key>NSCameraUsageDescription</key>
-        <string>$(PRODUCT_NAME) needs access to your camera.</string>
+        <string>$(PRODUCT_NAME) needs access to your camera to capture a selfie for marking
+            attendance and updating your profile picture.</string>
 
         <!-- Location Accuracy Permission -->
         <key>NSLocationTemporaryUsageDescriptionDictionary</key>
         <dict>
             <key>LocationAccuracy</key>
-            <string>We need precise location to provide better service and personalized experience.</string>
+            <string>We need precise location to accurately track your location for marking
+                attendance.</string>
         </dict>
 
         <!-- Location Always Permission -->
         <key>NSLocationAlwaysUsageDescription</key>
-        <string>We need your location to provide location-based services.</string>
+        <string>We need your location to track your attendance even when the app is in the
+            background.</string>
 
         <!-- Location When In Use Permission -->
         <key>NSLocationWhenInUseUsageDescription</key>
-        <string>We need your location to provide location-based services.</string>
+        <string>We need your location to track your attendance while using the app.</string>
 
         <!-- Media Library Permission -->
         <key>NSPhotoLibraryUsageDescription</key>
-        <string>We need access to your media library to select and upload photos and videos.</string>
+        <string>We need access to your media library to upload photos for your profile picture.</string>
 
-        <!-- Music Permission -->
+        <!-- Music Permission (Optional - Remove if not needed) -->
         <key>NSAppleMusicUsageDescription</key>
         <string>$(PRODUCT_NAME) needs access to your music library.</string>
 
@@ -109,6 +112,6 @@
             <string>UIInterfaceOrientationPortraitUpsideDown</string>
         </array>
         <key>UIViewControllerBasedStatusBarAppearance</key>
-        <false/>
+        <false />
     </dict>
 </plist>

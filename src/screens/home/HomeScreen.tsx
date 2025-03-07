@@ -77,7 +77,7 @@ const HomeScreen = ({navigation}: any) => {
 
   return (
     <>
-      <View style={[styles.header, {paddingTop: isIos ? insets.top : 10}]}>
+      <View style={[styles.header, {paddingTop: isIos ? insets.top : 40}]}>
         <View style={styles.userInfo}>
           <TouchableWithoutFeedback
             onPress={() => navigation.navigate('profileTab')}>
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: width * 0.05,
-    paddingVertical: height * 0.01,
+    paddingVertical: height * 0.02,
     backgroundColor: '#578FCA',
   },
   userInfo: {

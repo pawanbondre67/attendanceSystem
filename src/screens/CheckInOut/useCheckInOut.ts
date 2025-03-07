@@ -118,13 +118,13 @@ const useCheckInOut = ({
         throw new Error(`File not found: ${filePath}`);
       }
 
-      if (currentLatitude === null || currentLongitude === null) {
-        // throw new Error('Location not fetched');
-        return dispatch(setSnackMessage({
-          message: 'Location not fetched, please try again',
-          severity: 'warning',
-        }));
-      }
+      // if (currentLatitude === null || currentLongitude === null) {
+      //   // throw new Error('Location not fetched');
+      //   return dispatch(setSnackMessage({
+      //     message: 'Location not fetched, please try again',
+      //     severity: 'warning',
+      //   }));
+      // }
       const payload: any = {
         status: status === 'checkin' ? 'in' : 'inout',
         mip: deviceIp,
@@ -211,7 +211,7 @@ const useCheckInOut = ({
         }));
       } else {
         dispatch(setSnackMessage({
-          message: markAttendanceResult.error.data.message,
+          message: markAttendanceResult.error.data.message  ?? '',
           severity: 'error',
         }));
       }
@@ -241,7 +241,7 @@ const useCheckInOut = ({
         }));
       } else {
         dispatch(setSnackMessage({
-          message: checkOutResult.error.data.message,
+          message: checkOutResult.error.data.message ?? '',
           severity: 'error',
         }));
       }

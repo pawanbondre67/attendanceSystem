@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setSnackMessage} from '../../redux/slices/snackbarSlice';
 import {setCheckInOutData as setAttendanceData} from '../../redux/slices/Attendance';
 import {useLatestStatusQuery} from '../../redux/services/attendance/attendanceApiSlice';
+import { REACT_APP_BASE_URL } from '@env';
 
 // Constants for navigation and message severity
 const NAVIGATION_SCREENS = {
@@ -95,6 +96,7 @@ const { data: latestStatusData, isLoading: isLatestStatusLoading, refetch: refet
 
  // Handle login logic
  const handleLogin = async (navigation : any) => {
+  console.log('Logging in with data:', customerData);
   const validationErrors = checkValidation(customerData);
   if (validationErrors) {
     setErrors(validationErrors);
